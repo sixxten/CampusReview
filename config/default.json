@@ -1,0 +1,17 @@
+{
+  "port": 5000,
+  "clientUrl": "http://localhost:3000",
+  "database": {
+    "name": "campusreview",
+    "user": "postgres",
+    "password": "postgres",
+    "host": "localhost",
+    "port": 5431
+  },
+  "jwt": {
+    "accessSecret": "euqysjadk9186ss",
+    "refreshSecret": "ckaislslskam2134",
+    "accessExpiresIn": "15m",
+    "refreshExpiresIn": "30d"
+  }
+}
