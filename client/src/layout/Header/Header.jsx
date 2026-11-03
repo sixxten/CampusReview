@@ -1,0 +1,91 @@
+import { useEffect, useState } from "react"
+import { observer } from "mobx-react-lite"
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom"
+import { useStores } from "@/store"
+import { ROUTES } from "@/shared/consts"
+import { Button } from "@/ui/Button"
+import styles from "./Header.module.css"
+
+const NAV_ITEMS = [{ to: ROUTES.HOME, label: "Каталог курсов" }]
+
+export const Header = observer(() => {
+    const { userStore } = useStores()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const [menuOpen, setMenuOpen] = useState(false)
+
+    useEffect(() => {
+        setMenuOpen(false)
+    }, [location.pathname])
+
+    const handleLogout = async () => {
+        await userStore.logout()
+        navigate(ROUTES.HOME)
+    }
+
+    const navItems = NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(userStore.role))
+
+    return (
+        <header className={styles.header}>
+            <div className={`container ${styles.inner}`}>
+                <Link to={ROUTES.HOME} className={styles.logo}>
+                    Campus<span className={styles.logoAccent}>Review</span>
+                </Link>
+
+                <button
+                    type="button"
+                    className={styles.burger}
+                    aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+                    aria-expanded={menuOpen}
+                    aria-controls="main-menu"
+                    onClick={() => setMenuOpen((open) => !open)}
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                        {menuOpen ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+                    </svg>
+                </button>
+
+                <div id="main-menu" className={`${styles.menu} ${menuOpen ? styles.menuOpen : ""}`}>
+                    <nav className={styles.nav} aria-label="Основное меню">
+                        {navItems.map((item) => (
+                            <NavLink
+                                key={item.to}
+                                to={item.to}
+                                end
+                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`}
+                            >
+                                {item.label}
+                            </NavLink>
+                        ))}
+                    </nav>
+
+                    <div className={styles.actions}>
+                        {userStore.isChecking ? null : userStore.isAuth ? (
+                            <>
+                                <Link to={ROUTES.PROFILE} className={styles.user}>
+                                    <span className={styles.avatar} aria-hidden="true">
+                                        {userStore.user.firstName[0]}
+                                    </span>
+                                    {userStore.user.firstName}
+                                </Link>
+                                <Button variant="outline" size="sm" onClick={handleLogout}>
+                                    Выйти
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button variant="ghost" size="sm" to={ROUTES.LOGIN}>
+                                    Войти
+                                </Button>
+                                <Button size="sm" to={ROUTES.REGISTRATION}>
+                                    Регистрация
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </header>
+    )
+})
