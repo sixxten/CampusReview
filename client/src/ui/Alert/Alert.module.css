@@ -1,0 +1,25 @@
+.alert {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+}
+
+.info {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-hover);
+}
+
+.danger {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+}
+
+.success {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+}
+
+.warning {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+}

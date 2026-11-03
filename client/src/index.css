@@ -1,0 +1,133 @@
+:root {
+
+    --color-bg: #f5f6f8;
+    --color-surface: #ffffff;
+    --color-text: #1b2430;
+    --color-muted: #5a6472;
+    --color-border: #e2e5ea;
+    --color-border-strong: #8a94a3;
+
+    --color-primary: #2f4bdb;
+    --color-primary-hover: #2339b5;
+    --color-primary-soft: #eaeefd;
+    --color-on-primary: #ffffff;
+
+    --color-danger: #c62f3a;
+    --color-danger-soft: #fdecee;
+    --color-success: #1f7a4d;
+    --color-success-soft: #e6f4ec;
+    --color-warning: #8a5a00;
+    --color-warning-soft: #fdf3dc;
+
+    --font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-size-sm: 13px;
+    --font-size-md: 15px;
+    --font-size-lg: 18px;
+    --font-size-xl: 28px;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(27, 36, 48, 0.06);
+    --shadow-md: 0 8px 24px rgba(27, 36, 48, 0.12);
+
+    --container-width: 1200px;
+    --header-height: 64px;
+    --control-height: 44px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-md);
+    line-height: 1.5;
+    color: var(--color-text);
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+    margin: 0;
+}
+
+h1 {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.container {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding-inline: var(--space-6);
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding-inline: var(--space-4);
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+}
