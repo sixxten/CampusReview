@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs")
-const { User } = require("../models")
+const { Op } = require("sequelize")
+const { User, Token } = require("../models")
 const tokenService = require("./tokenService")
 const ApiError = require("../exceptions/ApiError")
 
@@ -88,13 +89,47 @@ class UserService {
         return this.issueTokens(user)
     }
 
-    async getById(id) {
+    async findUserOrFail(id) {
         const user = await User.findByPk(id)
         if (!user) {
             throw ApiError.NotFound("Пользователь не найден")
         }
+        return user
+    }
+
+    async getById(id) {
+        const user = await this.findUserOrFail(id)
         return toUserData(user)
+    }
+
+    async updateProfile(id, { firstName, lastName }) {
+        const user = await this.findUserOrFail(id)
+        await user.update({ firstName, lastName })
+        return toUserData(user)
+    }
+
+    async changePassword(id, { currentPassword, newPassword }, currentRefreshToken) {
+        const user = await this.findUserOrFail(id)
+
+        if (!(await bcrypt.compare(currentPassword, user.password))) {
+            throw ApiError.BadRequest("Неверный текущий пароль", [
+                { path: "currentPassword", msg: "Неверный текущий пароль" }
+            ])
+        }
+        if (await bcrypt.compare(newPassword, user.password)) {
+            throw ApiError.BadRequest("Новый пароль совпадает с текущим", [
+                { path: "newPassword", msg: "Новый пароль совпадает с текущим" }
+            ])
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10)
+        await user.save()
+
+        await Token.destroy({
+            where: { userId: id, refreshToken: { [Op.ne]: currentRefreshToken || "" } }
+        })
     }
 }
 
 module.exports = new UserService()
+module.exports.toUserData = toUserData

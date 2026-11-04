@@ -1,7 +1,4 @@
-const config = require("config")
-const { validationResult } = require("express-validator")
 const userService = require("../services/userService")
-const ApiError = require("../exceptions/ApiError")
 
 const REFRESH_COOKIE = "refreshToken"
 const isProduction = process.env.NODE_ENV === "production"
@@ -12,6 +9,7 @@ const cookieOptions = {
     secure: isProduction,
     path: "/api/user"
 }
+
 
 function sendAuthResponse(res, userData, status = 200) {
     res.cookie(REFRESH_COOKIE, userData.refreshToken, {
@@ -24,17 +22,9 @@ function sendAuthResponse(res, userData, status = 200) {
     })
 }
 
-function checkValidation(req) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        throw ApiError.BadRequest("Ошибка валидации", errors.array())
-    }
-}
-
 class UserController {
     async registration(req, res, next) {
         try {
-            checkValidation(req)
             const { email, password, firstName, lastName, role } = req.body
             const userData = await userService.registration({ email, password, firstName, lastName, role })
             return sendAuthResponse(res, userData, 201)
@@ -45,7 +35,6 @@ class UserController {
 
     async login(req, res, next) {
         try {
-            checkValidation(req)
             const { email, password } = req.body
             const userData = await userService.login({ email, password })
             return sendAuthResponse(res, userData)
@@ -78,6 +67,30 @@ class UserController {
         try {
             const user = await userService.getById(req.user.id)
             return res.json(user)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async updateProfile(req, res, next) {
+        try {
+            const { firstName, lastName } = req.body
+            const user = await userService.updateProfile(req.user.id, { firstName, lastName })
+            return res.json(user)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async changePassword(req, res, next) {
+        try {
+            const { currentPassword, newPassword } = req.body
+            await userService.changePassword(
+                req.user.id,
+                { currentPassword, newPassword },
+                req.cookies[REFRESH_COOKIE]
+            )
+            return res.json({ message: "Пароль изменён" })
         } catch (e) {
             next(e)
         }
