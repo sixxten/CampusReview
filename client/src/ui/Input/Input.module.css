@@ -43,3 +43,10 @@
     font-size: var(--font-size-sm);
     color: var(--color-muted);
 }
+
+.input:disabled {
+    background: var(--color-bg);
+    color: var(--color-muted);
+    border-color: var(--color-border);
+    cursor: not-allowed;
+}
