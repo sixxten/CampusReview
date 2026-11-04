@@ -3,10 +3,13 @@ import { observer } from "mobx-react-lite"
 import { useNavigate } from "react-router-dom"
 import { useStores } from "@/store"
 import { userApi } from "@/shared/api"
-import { ROLE_LABELS, ROUTES, USER_STATUS, USER_STATUS_LABELS } from "@/shared/consts"
+import { ROLE_LABELS, ROUTES, USER_STATUS, USER_STATUS_LABELS, USER_STATUS_TONE } from "@/shared/consts"
 import { Alert } from "@/ui/Alert"
+import { Badge } from "@/ui/Badge"
 import { Button } from "@/ui/Button"
 import { Card } from "@/ui/Card"
+import { ProfileForm } from "./ProfileForm"
+import { PasswordForm } from "./PasswordForm"
 import styles from "./ProfilePage.module.css"
 
 export const ProfilePage = observer(() => {
@@ -40,7 +43,7 @@ export const ProfilePage = observer(() => {
                 </Alert>
             )}
 
-            <Card className={styles.card}>
+            <Card className={styles.summary}>
                 <div className={styles.avatar} aria-hidden="true">
                     {user.firstName[0]}
                     {user.lastName[0]}
@@ -48,15 +51,20 @@ export const ProfilePage = observer(() => {
                 <div className={styles.info}>
                     <h2>{userStore.fullName}</h2>
                     <span className={styles.email}>{user.email}</span>
-                    <div className={styles.tags}>
-                        <span className={styles.tag}>{ROLE_LABELS[user.role]}</span>
-                        <span className={`${styles.tag} ${styles[user.status]}`}>{USER_STATUS_LABELS[user.status]}</span>
+                    <div className={styles.badges}>
+                        <Badge>{ROLE_LABELS[user.role]}</Badge>
+                        <Badge tone={USER_STATUS_TONE[user.status]}>{USER_STATUS_LABELS[user.status]}</Badge>
                     </div>
                 </div>
                 <Button variant="outline" onClick={handleLogout} loading={loggingOut}>
                     Выйти
                 </Button>
             </Card>
+
+            <div className={styles.forms}>
+                <ProfileForm key={user.id} />
+                <PasswordForm />
+            </div>
         </div>
     )
 })

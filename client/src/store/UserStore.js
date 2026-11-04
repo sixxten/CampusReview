@@ -8,6 +8,7 @@ export class UserStore {
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true })
+        // сессия истекла посреди работы — разлогиниваем
         setOnAuthFailure(this.reset)
     }
 
@@ -47,6 +48,12 @@ export class UserStore {
         return data.user
     }
 
+    async updateProfile(data) {
+        const user = await userApi.updateProfile(data)
+        this.setUser(user)
+        return user
+    }
+
     async logout() {
         try {
             await userApi.logout()
@@ -56,6 +63,7 @@ export class UserStore {
     }
 
     async checkAuth() {
+
         if (!localStorage.getItem(TOKEN_KEY)) {
             this.isChecking = false
             return

@@ -2,7 +2,8 @@ export const ROUTES = {
     HOME: "/",
     LOGIN: "/login",
     REGISTRATION: "/registration",
-    PROFILE: "/profile"
+    PROFILE: "/profile",
+    ADMIN: "/admin"
 }
 
 export const ROLES = {
@@ -27,4 +28,10 @@ export const USER_STATUS_LABELS = {
     active: "Активен",
     pending: "Ожидает подтверждения",
     blocked: "Заблокирован"
+}
+
+export const USER_STATUS_TONE = {
+    active: "success",
+    pending: "warning",
+    blocked: "danger"
 }

@@ -4,11 +4,11 @@ export const TOKEN_KEY = "accessToken"
 
 const config = { baseURL: import.meta.env.VITE_API_URL, withCredentials: true }
 
-export const $host = axios.create(config)
+export const host = axios.create(config)
 
-export const $authHost = axios.create(config)
+export const authHost = axios.create(config)
 
-$authHost.interceptors.request.use((request) => {
+authHost.interceptors.request.use((request) => {
     const token = localStorage.getItem(TOKEN_KEY)
     if (token) {
         request.headers.Authorization = `Bearer ${token}`
@@ -20,7 +20,7 @@ let refreshPromise = null
 
 export function refreshTokens() {
     if (!refreshPromise) {
-        refreshPromise = $host
+        refreshPromise = host
             .post("/user/refresh")
             .then(({ data }) => {
                 localStorage.setItem(TOKEN_KEY, data.accessToken)
@@ -38,7 +38,7 @@ export function setOnAuthFailure(callback) {
     onAuthFailure = callback
 }
 
-$authHost.interceptors.response.use(
+authHost.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config
@@ -46,7 +46,7 @@ $authHost.interceptors.response.use(
             originalRequest._retry = true
             try {
                 await refreshTokens()
-                return $authHost.request(originalRequest)
+                return authHost.request(originalRequest)
             } catch {
                 localStorage.removeItem(TOKEN_KEY)
                 onAuthFailure()
@@ -55,7 +55,6 @@ $authHost.interceptors.response.use(
         throw error
     }
 )
-
 
 export function parseApiError(error) {
     if (!error.response) {
@@ -73,11 +72,23 @@ export function parseApiError(error) {
 }
 
 export const userApi = {
-    registration: (payload) => $host.post("/user/registration", payload).then((res) => res.data),
 
-    login: (payload) => $host.post("/user/login", payload).then((res) => res.data),
+    registration: (payload) => host.post("/user/registration", payload).then((res) => res.data),
 
-    logout: () => $host.post("/user/logout").then((res) => res.data),
+    login: (payload) => host.post("/user/login", payload).then((res) => res.data),
 
-    fetchMe: () => $authHost.get("/user/me").then((res) => res.data)
+    logout: () => host.post("/user/logout").then((res) => res.data),
+
+    fetchMe: () => authHost.get("/user/me").then((res) => res.data),
+
+    updateProfile: (payload) => authHost.patch("/user/me", payload).then((res) => res.data),
+
+    changePassword: (payload) => authHost.patch("/user/me/password", payload).then((res) => res.data)
+}
+
+export const adminApi = {
+    getUsers: (params) => authHost.get("/admin/users", { params }).then((res) => res.data),
+
+    updateUserStatus: (id, status) =>
+        authHost.patch(`/admin/users/${id}/status`, { status }).then((res) => res.data)
 }
