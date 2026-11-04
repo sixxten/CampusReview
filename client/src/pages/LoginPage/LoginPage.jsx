@@ -53,7 +53,6 @@ export function LoginPage() {
     return (
         <AuthLayout
             title="Вход"
-            subtitle="Войдите, чтобы писать отзывы и сохранять курсы в избранное"
             footer={
                 <>
                     Нет аккаунта? <Link to={ROUTES.REGISTRATION}>Зарегистрироваться</Link>

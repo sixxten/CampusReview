@@ -11,16 +11,8 @@ import { Input } from "@/ui/Input"
 import styles from "./RegisterPage.module.css"
 
 const ROLE_OPTIONS = [
-    {
-        value: ROLES.STUDENT,
-        title: "Студент",
-        description: "Отзывы, избранное, личный кабинет"
-    },
-    {
-        value: ROLES.TEACHER,
-        title: "Преподаватель",
-        description: "Профиль и ответы на отзывы. Аккаунт подтверждает администратор"
-    }
+    { value: ROLES.STUDENT, label: "Студент" },
+    { value: ROLES.TEACHER, label: "Преподаватель" }
 ]
 
 const INITIAL_FORM = {
@@ -87,7 +79,7 @@ export function RegisterPage() {
     return (
         <AuthLayout
             title="Регистрация"
-            width={520}
+            width={480}
             footer={
                 <>
                     Уже есть аккаунт? <Link to={ROUTES.LOGIN}>Войти</Link>
@@ -98,11 +90,11 @@ export function RegisterPage() {
                 {formError && <Alert tone="danger">{formError}</Alert>}
 
                 <fieldset className={styles.roles}>
-                    <legend className={styles.legend}>Я регистрируюсь как</legend>
+                    <legend className="visually-hidden">Я регистрируюсь как</legend>
                     {ROLE_OPTIONS.map((option) => (
                         <label
                             key={option.value}
-                            className={`${styles.roleCard} ${form.role === option.value ? styles.roleActive : ""}`}
+                            className={`${styles.role} ${form.role === option.value ? styles.roleActive : ""}`}
                         >
                             <input
                                 type="radio"
@@ -110,16 +102,13 @@ export function RegisterPage() {
                                 value={option.value}
                                 checked={form.role === option.value}
                                 onChange={handleChange}
-                                className={styles.radio}
+                                className="visually-hidden"
                             />
-                            <span className={styles.roleText}>
-                                <span className={styles.roleTitle}>{option.title}</span>
-                                <span className={styles.roleDescription}>{option.description}</span>
-                            </span>
+                            {option.label}
                         </label>
                     ))}
                 </fieldset>
-
+                
                 <div className={styles.row}>
                     <Input
                         label="Имя"
@@ -156,7 +145,7 @@ export function RegisterPage() {
                         name="password"
                         type="password"
                         autoComplete="new-password"
-                        hint="Не меньше 8 символов"
+                        placeholder="Минимум 8 символов"
                         value={form.password}
                         onChange={handleChange}
                         error={errors.password}

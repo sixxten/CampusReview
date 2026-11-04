@@ -2,11 +2,14 @@ import { useEffect, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useStores } from "@/store"
-import { ROUTES } from "@/shared/consts"
+import { ROLES, ROUTES } from "@/shared/consts"
 import { Button } from "@/ui/Button"
 import styles from "./Header.module.css"
 
-const NAV_ITEMS = [{ to: ROUTES.HOME, label: "Каталог курсов" }]
+const NAV_ITEMS = [
+    { to: ROUTES.HOME, label: "Каталог курсов" },
+    { to: ROUTES.ADMIN, label: "Админ-панель", roles: [ROLES.ADMIN] }
+]
 
 export const Header = observer(() => {
     const { userStore } = useStores()
@@ -63,12 +66,19 @@ export const Header = observer(() => {
                     <div className={styles.actions}>
                         {userStore.isChecking ? null : userStore.isAuth ? (
                             <>
-                                <Link to={ROUTES.PROFILE} className={styles.user}>
-                                    <span className={styles.avatar} aria-hidden="true">
-                                        {userStore.user.firstName[0]}
-                                    </span>
-                                    {userStore.user.firstName}
-                                </Link>
+                                <NavLink
+                                    to={ROUTES.PROFILE}
+                                    className={({ isActive }) => `${styles.profile} ${isActive ? styles.profileActive : ""}`}
+                                    aria-label="Личный кабинет"
+                                    title="Личный кабинет"
+                                >
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="8" r="4" />
+                                        <path d="M4 21a8 8 0 0 1 16 0" />
+                                    </svg>
+                                    <span className={styles.profileLabel}>Личный кабинет</span>
+                                </NavLink>
                                 <Button variant="outline" size="sm" onClick={handleLogout}>
                                     Выйти
                                 </Button>

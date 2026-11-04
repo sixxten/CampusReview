@@ -13,61 +13,48 @@
 .roles {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
+    gap: var(--space-1);
     margin: 0;
-    padding: 0;
+    padding: var(--space-1);
     border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
 }
 
-.legend {
-    margin-bottom: var(--space-2);
-    padding: 0;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-}
-
-.roleCard {
+.role {
     display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-    padding: var(--space-4);
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-md);
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    border-radius: 6px;
+    color: var(--color-muted);
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    transition: border-color 0.15s, background-color 0.15s;
+    transition: background-color 0.15s, color 0.15s;
 }
 
-.roleCard:hover {
-    border-color: var(--color-border-strong);
+.role:hover {
+    color: var(--color-text);
 }
 
 .roleActive,
 .roleActive:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary-soft);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
 }
 
-.radio {
-    margin-top: 3px;
-    accent-color: var(--color-primary);
-    width: 18px;
-    height: 18px;
-    flex: none;
+.role:has(input:focus-visible) {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 1px;
 }
 
-.roleText {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.roleTitle {
-    font-weight: 700;
-}
-
-.roleDescription {
+.roleHint {
+    margin-top: calc(var(--space-2) * -1);
     font-size: var(--font-size-sm);
     color: var(--color-muted);
+    text-align: center;
 }
 
 .error {
@@ -77,8 +64,7 @@
 }
 
 @media (max-width: 640px) {
-    .row,
-    .roles {
+    .row {
         grid-template-columns: 1fr;
     }
 }
