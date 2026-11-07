@@ -4,10 +4,13 @@ export const ROUTES = {
     REGISTRATION: "/registration",
     PROFILE: "/profile",
     ADMIN: "/admin",
-    COURSE: "/courses/:id"
+    COURSE: "/courses/:id",
+    REVIEW_FORM: "/courses/:id/review"
 }
 
 export const courseRoute = (id) => ROUTES.COURSE.replace(":id", id)
+
+export const reviewFormRoute = (id) => ROUTES.REVIEW_FORM.replace(":id", id)
 
 export const ROLES = {
     STUDENT: "student",
@@ -58,3 +61,40 @@ export const COURSE_SORT_OPTIONS = [
     { value: "hard", label: "Сначала сложные" },
     { value: "title", label: "По названию" }
 ]
+
+export const REVIEW_CRITERIA = [
+    { key: "usefulness", label: "Полезность", hint: "1 — бесполезно, 5 — очень полезно" },
+    { key: "difficulty", label: "Сложность", hint: "1 — очень легко, 5 — очень сложно" },
+    { key: "workload", label: "Нагрузка", hint: "1 — почти нет заданий, 5 — очень много" },
+    { key: "atmosphere", label: "Атмосфера", hint: "1 — некомфортно, 5 — отличная атмосфера" },
+    { key: "practicalValue", label: "Практическая ценность", hint: "1 — только теория, 5 — сразу пригодится" }
+]
+
+export const REVIEW_STATUS = {
+    DRAFT: "draft",
+    PENDING: "pending",
+    PUBLISHED: "published",
+    REJECTED: "rejected"
+}
+
+export const REVIEW_STATUS_LABELS = {
+    draft: "Черновик",
+    pending: "На модерации",
+    published: "Опубликован",
+    rejected: "Отклонён"
+}
+
+export const REVIEW_STATUS_TONE = {
+    draft: "neutral",
+    pending: "warning",
+    published: "success",
+    rejected: "danger"
+}
+
+export const REVIEW_SORT_OPTIONS = [
+    { value: "new", label: "Сначала новые" },
+    { value: "high", label: "Сначала высокие оценки" },
+    { value: "low", label: "Сначала низкие оценки" }
+]
+
+export const REVIEW_MIN_TEXT = 20

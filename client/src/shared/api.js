@@ -99,3 +99,18 @@ export const courseApi = {
 
     getFilterOptions: () => host.get("/courses/filters").then((res) => res.data)
 }
+
+export const reviewApi = {
+    getCourseReviews: (courseId, params) =>
+        host.get(`/courses/${courseId}/reviews`, { params }).then((res) => res.data),
+
+    getCourseStats: (courseId) => host.get(`/courses/${courseId}/stats`).then((res) => res.data),
+
+    getMy: (params) => authHost.get("/reviews/my", { params }).then((res) => res.data),
+
+    create: (payload) => authHost.post("/reviews", payload).then((res) => res.data),
+
+    update: (id, payload) => authHost.put(`/reviews/${id}`, payload).then((res) => res.data),
+
+    remove: (id) => authHost.delete(`/reviews/${id}`).then((res) => res.data)
+}

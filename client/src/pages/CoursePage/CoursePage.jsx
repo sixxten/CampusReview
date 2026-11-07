@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 import { courseApi, parseApiError } from "@/shared/api"
 import { FORMAT_LABELS, ROUTES } from "@/shared/consts"
-import { formatRating, getDifficultyLabel, plural } from "@/shared/utils"
+import { getDifficultyLabel } from "@/shared/utils"
 import { Alert } from "@/ui/Alert"
 import { Badge } from "@/ui/Badge"
 import { Button } from "@/ui/Button"
 import { Card } from "@/ui/Card"
 import { Spinner } from "@/ui/Spinner"
+import { CourseRating } from "./CourseRating"
+import { CourseReviews } from "./CourseReviews"
 import styles from "./CoursePage.module.css"
 
 const parseProgram = (program) =>
@@ -18,7 +20,7 @@ const parseProgram = (program) =>
 
 export function CoursePage() {
     const { id } = useParams()
-
+    const notice = useLocation().state?.notice
     const [result, setResult] = useState({ id: null, course: null, error: "", notFound: false })
     const loading = result.id !== id
 
@@ -82,6 +84,8 @@ export function CoursePage() {
                 <span aria-current="page">{course.title}</span>
             </nav>
 
+            {notice && <Alert tone="success">{notice}</Alert>}
+
             <Card as="header" className={styles.header}>
                 <h1>{course.title}</h1>
                 <p className={styles.meta}>
@@ -115,26 +119,11 @@ export function CoursePage() {
                         </Card>
                     )}
 
-                    <Card as="section" className={styles.section} aria-labelledby="reviews-title">
-                        <h2 id="reviews-title">Отзывы</h2>
-                        <p className={styles.muted}>Отзывов пока нет.</p>
-                    </Card>
+                    <CourseReviews courseId={id} />
                 </div>
 
                 <aside className={styles.aside}>
-                    <Card className={styles.section} aria-labelledby="rating-title">
-                        <h2 id="rating-title">Рейтинг</h2>
-                        {hasReviews ? (
-                            <div className={styles.rating}>
-                                <span className={styles.ratingValue}>{formatRating(course.avgRating)}</span>
-                                <span className={styles.muted}>
-                                    из 5 · {course.reviewsCount} {plural(course.reviewsCount, ["отзыв", "отзыва", "отзывов"])}
-                                </span>
-                            </div>
-                        ) : (
-                            <p className={styles.muted}>Оценок пока нет</p>
-                        )}
-                    </Card>
+                    <CourseRating courseId={id} />
 
                     <Card className={styles.section}>
                         <h2>Информация</h2>
@@ -155,9 +144,7 @@ export function CoursePage() {
                             </div>
                             <div>
                                 <dt>Количество часов</dt>
-                                <dd>
-                                    {course.hours} ч
-                                </dd>
+                                <dd>{course.hours} ч</dd>
                             </div>
                             <div>
                                 <dt>Формат</dt>
