@@ -8,13 +8,142 @@
 
 .banner {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-4);
+    background: var(--color-primary-soft);
+    border-color: var(--color-primary-soft);
+    box-shadow: none;
 }
 
 .bannerText {
     flex: 1;
-    min-width: 220px;
     font-weight: 600;
+}
+
+.bannerActions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.search {
+    display: flex;
+}
+
+.searchInput {
+    flex: 1;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--space-6);
+    align-items: start;
+}
+
+.filters {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-4));
+}
+
+.results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.toolbar .filtersToggle {
+    display: none;
+}
+
+.count {
+    flex: 1;
+    color: var(--color-muted);
+    font-size: 14px;
+}
+
+.sort {
+    width: 240px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-12) var(--space-5);
+    text-align: center;
+}
+
+.emptyText {
+    color: var(--color-muted);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2);
+}
+
+@media (max-width: 960px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        display: none;
+        position: static;
+    }
+
+    .filtersOpen {
+        display: block;
+    }
+
+    .toolbar .filtersToggle {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 640px) {
+    .banner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bannerActions > * {
+        flex: 1;
+    }
+
+    .toolbar {
+        flex-wrap: wrap;
+    }
+
+    .count {
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .toolbar .filtersToggle,
+    .sort {
+        flex: 1;
+        width: auto;
+    }
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-12) 0;
 }

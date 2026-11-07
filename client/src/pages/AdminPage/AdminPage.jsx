@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { adminApi, parseApiError } from "@/shared/api"
+import { useDebouncedValue } from "@/shared/hooks"
 import { ROLE_LABELS, USER_STATUS_LABELS } from "@/shared/consts"
 import { Alert } from "@/ui/Alert"
 import { Button } from "@/ui/Button"
@@ -21,15 +22,6 @@ const STATUS_OPTIONS = [
     { value: "", label: "Все статусы" },
     ...Object.entries(USER_STATUS_LABELS).map(([value, label]) => ({ value, label }))
 ]
-
-function useDebouncedValue(value, delay = 400) {
-    const [debounced, setDebounced] = useState(value)
-    useEffect(() => {
-        const timer = setTimeout(() => setDebounced(value), delay)
-        return () => clearTimeout(timer)
-    }, [value, delay])
-    return debounced
-}
 
 export function AdminPage() {
     const [filters, setFilters] = useState({ search: "", role: "", status: "pending" })
@@ -73,7 +65,6 @@ export function AdminPage() {
         }
     }, [search, filters.role, filters.status, page, reloadKey])
 
-    // любое изменение фильтра — снова с первой страницы
     const updateFilter = (name, value) => {
         setFilters((prev) => ({ ...prev, [name]: value }))
         setPage(1)

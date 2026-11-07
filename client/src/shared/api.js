@@ -72,7 +72,6 @@ export function parseApiError(error) {
 }
 
 export const userApi = {
-
     registration: (payload) => host.post("/user/registration", payload).then((res) => res.data),
 
     login: (payload) => host.post("/user/login", payload).then((res) => res.data),
@@ -91,4 +90,12 @@ export const adminApi = {
 
     updateUserStatus: (id, status) =>
         authHost.patch(`/admin/users/${id}/status`, { status }).then((res) => res.data)
+}
+
+export const courseApi = {
+    getCourses: (params) => host.get("/courses", { params }).then((res) => res.data),
+
+    getCourse: (id) => host.get(`/courses/${id}`).then((res) => res.data),
+
+    getFilterOptions: () => host.get("/courses/filters").then((res) => res.data)
 }
