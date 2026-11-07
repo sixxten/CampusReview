@@ -1,7 +1,9 @@
 const bcrypt = require("bcryptjs")
 const sequelize = require("../db")
-const { User, Faculty, Semester, Course } = require("../models")
+const { User, Faculty, Semester, Course, Review } = require("../models")
+const reviewService = require("../services/reviewService")
 const data = require("./seedData")
+const { reviews } = require("./seedReviews")
 
 async function seed() {
     await sequelize.authenticate()
@@ -38,9 +40,10 @@ async function seed() {
         users[fields.email] = user
     }
 
+    const courses = {}
     for (const { teacher, faculty, semester, ...fields } of data.courses) {
         const teacherId = users[teacher].id
-        await Course.findOrCreate({
+        const [course] = await Course.findOrCreate({
             where: { title: fields.title, teacherId },
             defaults: {
                 ...fields,
@@ -50,6 +53,31 @@ async function seed() {
                 semesterId: semesters[semester].id
             }
         })
+        courses[fields.title] = course
+    }
+
+    for (const { student, course, semester, ...fields } of reviews) {
+        const { usefulness, atmosphere, practicalValue } = fields
+        const rating =
+            usefulness && atmosphere && practicalValue
+                ? Math.round(((usefulness + atmosphere + practicalValue) / 3) * 10) / 10
+                : null
+        const status = fields.status || "published"
+
+        await Review.findOrCreate({
+            where: { userId: users[student].id, courseId: courses[course].id },
+            defaults: {
+                ...fields,
+                status,
+                rating,
+                semesterId: semesters[semester].id,
+                moderatedAt: status === "published" || status === "rejected" ? new Date() : null
+            }
+        })
+    }
+
+    for (const course of Object.values(courses)) {
+        await reviewService.recalcCourseRating(course.id)
     }
 
     console.log("Готово! Сейчас в базе:")
@@ -57,6 +85,7 @@ async function seed() {
     console.log(`  семестров:   ${await Semester.count()}`)
     console.log(`  пользователей: ${await User.count()}`)
     console.log(`  курсов: ${await Course.count()} (опубликовано: ${await Course.count({ where: { status: "published" } })})`)
+    console.log(`  отзывов: ${await Review.count()} (опубликовано: ${await Review.count({ where: { status: "published" } })})`)
     console.log(`Пароль демо-пользователей: ${data.DEMO_PASSWORD}`)
 }
 
