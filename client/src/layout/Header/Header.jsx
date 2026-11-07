@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { observer } from "mobx-react-lite"
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom"
+import { Link, NavLink, useNavigate } from "react-router-dom"
 import { useStores } from "@/store"
 import { ROLES, ROUTES } from "@/shared/consts"
 import { Button } from "@/ui/Button"
@@ -14,14 +14,16 @@ const NAV_ITEMS = [
 export const Header = observer(() => {
     const { userStore } = useStores()
     const navigate = useNavigate()
-    const location = useLocation()
     const [menuOpen, setMenuOpen] = useState(false)
 
-    useEffect(() => {
-        setMenuOpen(false)
-    }, [location.pathname])
+    const handleMenuClick = (event) => {
+        if (event.target.closest("a")) {
+            setMenuOpen(false)
+        }
+    }
 
     const handleLogout = async () => {
+        setMenuOpen(false)
         await userStore.logout()
         navigate(ROUTES.HOME)
     }
@@ -49,7 +51,7 @@ export const Header = observer(() => {
                     </svg>
                 </button>
 
-                <div id="main-menu" className={`${styles.menu} ${menuOpen ? styles.menuOpen : ""}`}>
+                <div id="main-menu" className={`${styles.menu} ${menuOpen ? styles.menuOpen : ""}`} onClick={handleMenuClick}>
                     <nav className={styles.nav} aria-label="Основное меню">
                         {navItems.map((item) => (
                             <NavLink
