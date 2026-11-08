@@ -210,6 +210,61 @@ class ReviewService {
         return { count, rating, averages, distribution }
     }
 
+    async getForModeration({ status = "pending", search, page = 1, limit = 10 }) {
+        const where = { status }
+        if (search) {
+            const pattern = `%${search}%`
+            where[Op.or] = [
+                { "$course.title$": { [Op.iLike]: pattern } },
+                { "$author.firstName$": { [Op.iLike]: pattern } },
+                { "$author.lastName$": { [Op.iLike]: pattern } }
+            ]
+        }
+
+        const { rows, count } = await Review.findAndCountAll({
+            where,
+            include: [
+                { model: Course, attributes: ["id", "title"] },
+                { model: User, as: "author", attributes: ["id", "firstName", "lastName", "email"] },
+                { model: Semester, attributes: ["id", "name"] }
+            ],
+            order: status === "pending" ? [["updatedAt", "ASC"]] : [["moderatedAt", "DESC"]],
+            limit,
+            offset: (page - 1) * limit,
+            subQuery: false,
+            distinct: true
+        })
+
+        return {
+            reviews: rows,
+            total: count,
+            page,
+            pages: Math.max(1, Math.ceil(count / limit))
+        }
+    }
+
+    async moderate(adminId, reviewId, { status, rejectionReason }) {
+        const review = await Review.findByPk(reviewId)
+        if (!review) {
+            throw ApiError.NotFound("Отзыв не найден")
+        }
+        if (review.status !== "pending") {
+            throw ApiError.BadRequest("Этот отзыв уже проверен или ещё не отправлен на модерацию")
+        }
+
+        await review.update({
+            status,
+            rejectionReason: status === "rejected" ? rejectionReason : null,
+            moderatorId: adminId,
+            moderatedAt: new Date()
+        })
+
+        if (status === "published") {
+            await this.recalcCourseRating(review.courseId)
+        }
+        return review
+    }
+
     async recalcCourseRating(courseId) {
         const stats = await Review.findOne({
             where: { courseId, status: "published" },
