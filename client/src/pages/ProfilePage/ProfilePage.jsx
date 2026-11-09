@@ -113,7 +113,9 @@ export const ProfilePage = observer(() => {
             <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
                 {tab === "reviews" && <MyReviewsTab />}
                 {tab === "favorites" && <FavoritesTab />}
-                {tab === "courses" && <TeacherCoursesTab onShowReviews={showTeacherReviews} />}
+                {tab === "courses" && (
+                    <TeacherCoursesTab canEdit={user.status === USER_STATUS.ACTIVE} onShowReviews={showTeacherReviews} />
+                )}
                 {tab === "answers" && (
                     <TeacherReviewsTab
                         courseId={searchParams.get("course") || ""}

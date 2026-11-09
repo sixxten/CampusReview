@@ -20,7 +20,9 @@ const TYPE_VIEW = {
     course_new_review: { icon: "star", tone: "primary" },
     teacher_approved: { icon: "user", tone: "success" },
     account_unblocked: { icon: "unlock", tone: "success" },
-    review_reply: { icon: "reply", tone: "primary" }
+    review_reply: { icon: "reply", tone: "primary" },
+    course_published: { icon: "check", tone: "success" },
+    course_rejected: { icon: "cross", tone: "danger" }
 }
 
 export function NotificationItem({ notification, onOpen, compact = false }) {

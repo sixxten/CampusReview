@@ -8,6 +8,7 @@ import { NotFoundPage } from "@/pages/NotFoundPage"
 import { AdminPage } from "@/pages/AdminPage"
 import { CoursePage } from "@/pages/CoursePage"
 import { ReviewFormPage } from "@/pages/ReviewFormPage"
+import { CourseFormPage } from "@/pages/CourseFormPage"
 import { ROLES, ROUTES } from "@/shared/consts"
 import { GuestOnly, RequireAuth } from "./guards"
 
@@ -29,6 +30,11 @@ export function AppRouter() {
 
                 <Route element={<RequireAuth roles={[ROLES.STUDENT]} />}>
                     <Route path={ROUTES.REVIEW_FORM} element={<ReviewFormPage />} />
+                </Route>
+
+                <Route element={<RequireAuth roles={[ROLES.TEACHER]} />}>
+                    <Route path={ROUTES.COURSE_NEW} element={<CourseFormPage />} />
+                    <Route path={ROUTES.COURSE_EDIT} element={<CourseFormPage />} />
                 </Route>
 
                 <Route element={<RequireAuth roles={[ROLES.ADMIN]} />}>

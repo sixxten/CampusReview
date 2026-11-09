@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { parseApiError, teacherApi } from "@/shared/api"
-import { COURSE_STATUS_LABELS, COURSE_STATUS_TONE, courseRoute } from "@/shared/consts"
-import { formatRating, plural } from "@/shared/utils"
+import { ROUTES } from "@/shared/consts"
+import { formatRating } from "@/shared/utils"
 import { Alert } from "@/ui/Alert"
-import { Badge } from "@/ui/Badge"
 import { Button } from "@/ui/Button"
 import { Card } from "@/ui/Card"
 import { Spinner } from "@/ui/Spinner"
+import { TeacherCourseItem } from "./TeacherCourseItem"
 import styles from "./ProfilePage.module.css"
 
-export function TeacherCoursesTab({ onShowReviews }) {
+export function TeacherCoursesTab({ canEdit, onShowReviews }) {
+    const location = useLocation()
     const [data, setData] = useState(null)
     const [error, setError] = useState("")
 
@@ -31,6 +32,21 @@ export function TeacherCoursesTab({ onShowReviews }) {
         }
     }, [])
 
+    const handleDelete = async (course) => {
+        setError("")
+        try {
+            await teacherApi.removeCourse(course.id)
+            setData((prev) => ({
+                courses: prev.courses.filter((item) => item.id !== course.id),
+                summary: prev.summary && { ...prev.summary, courses: prev.summary.courses - 1 }
+            }))
+            return true
+        } catch (err) {
+            setError(parseApiError(err).message)
+            return false
+        }
+    }
+
     if (data === null) {
         return (
             <div className={styles.loader}>
@@ -40,9 +56,11 @@ export function TeacherCoursesTab({ onShowReviews }) {
     }
 
     const { courses, summary } = data
+    const notice = location.state?.notice
 
     return (
         <div className={styles.tabContent}>
+            {notice && <Alert tone="success">{notice}</Alert>}
             {error && <Alert tone="danger">{error}</Alert>}
 
             {summary && (
@@ -59,67 +77,39 @@ export function TeacherCoursesTab({ onShowReviews }) {
                         <dt>Средняя оценка</dt>
                         <dd>{summary.reviews ? formatRating(summary.rating) : "—"}</dd>
                     </div>
-                    <div className={`${styles.stat} ${summary.unanswered ? styles.statAccent : ""}`}>
-                        <dt>Без ответа</dt>
-                        <dd>{summary.unanswered}</dd>
+                    <div className={styles.stat}>
+                        <dt>В каталоге</dt>
+                        <dd>{summary.published}</dd>
                     </div>
                 </dl>
             )}
 
+            <div className={styles.tabToolbar}>
+                <h2 className={styles.sectionTitle}>Мои курсы</h2>
+                {canEdit ? (
+                    <Button size="sm" to={ROUTES.COURSE_NEW}>
+                        Добавить курс
+                    </Button>
+                ) : (
+                    <span className={styles.muted}>Добавлять курсы можно после подтверждения аккаунта</span>
+                )}
+            </div>
+
             {courses.length === 0 ? (
                 <Card className={styles.empty}>
                     <h2>У вас пока нет курсов</h2>
-                    <p className={styles.muted}>Когда за вами закрепят курс, он появится здесь вместе с отзывами студентов.</p>
+                    <p className={styles.muted}>Добавьте курс — после проверки администратором он появится в каталоге.</p>
                 </Card>
             ) : (
                 <ul className={styles.reviewList}>
                     {courses.map((course) => (
-                        <li key={course.id} className={styles.reviewItem}>
-                            <div className={styles.reviewItemTop}>
-                                <div className={styles.reviewItemTitle}>
-                                    {course.status === "published" ? (
-                                        <Link to={courseRoute(course.id)} className={styles.courseLink}>
-                                            {course.title}
-                                        </Link>
-                                    ) : (
-                                        <span className={styles.courseLink}>{course.title}</span>
-                                    )}
-                                    <span className={styles.muted}>
-                                        {course.faculty?.shortName || course.faculty?.name} · {course.semester?.name} · {course.hours} ч.
-                                    </span>
-                                </div>
-                                <div className={styles.reviewItemBadges}>
-                                    <Badge tone={COURSE_STATUS_TONE[course.status]}>{COURSE_STATUS_LABELS[course.status]}</Badge>
-                                    {course.reviewsCount > 0 && (
-                                        <span className={styles.ratingBadge}>
-                                            <span className="visually-hidden">Рейтинг </span>
-                                            {formatRating(course.avgRating)}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            {course.rejectionReason && course.status === "rejected" && (
-                                <Alert tone="warning">Причина отклонения: {course.rejectionReason}</Alert>
-                            )}
-
-                            <div className={styles.reviewItemActions}>
-                                <span className={styles.muted}>
-                                    {course.reviewsCount} {plural(course.reviewsCount, ["отзыв", "отзыва", "отзывов"])}
-                                    {course.unansweredCount > 0 && `, без ответа: ${course.unansweredCount}`}
-                                </span>
-                                {course.unansweredCount > 0 && (
-                                    <Button size="sm" onClick={() => onShowReviews({ course: course.id, replied: "no" })}>
-                                        Ответить
-                                    </Button>
-                                )}
-                                {course.reviewsCount > 0 && (
-                                    <Button variant="outline" size="sm" onClick={() => onShowReviews({ course: course.id })}>
-                                        Все отзывы
-                                    </Button>
-                                )}
-                            </div>
-                        </li>
+                        <TeacherCourseItem
+                            key={course.id}
+                            course={course}
+                            canEdit={canEdit}
+                            onShowReviews={onShowReviews}
+                            onDelete={handleDelete}
+                        />
                     ))}
                 </ul>
             )}

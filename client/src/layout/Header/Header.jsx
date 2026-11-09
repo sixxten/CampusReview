@@ -29,6 +29,9 @@ export const Header = observer(() => {
         navigate(ROUTES.HOME)
     }
 
+    const { user } = userStore
+    const initials = user ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() : ""
+
     const navItems = NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(userStore.role))
 
     return (
@@ -77,16 +80,21 @@ export const Header = observer(() => {
                                     aria-label="Личный кабинет"
                                     title="Личный кабинет"
                                 >
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <circle cx="12" cy="8" r="4" />
-                                        <path d="M4 21a8 8 0 0 1 16 0" />
-                                    </svg>
+                                    <span className={styles.avatar} aria-hidden="true">
+                                        {initials}
+                                    </span>
                                     <span className={styles.profileLabel}>Личный кабинет</span>
                                 </NavLink>
-                                <Button variant="outline" size="sm" onClick={handleLogout}>
+                                <span className={styles.divider} aria-hidden="true" />
+                                <button type="button" className={styles.logout} onClick={handleLogout}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+                                        <path d="M10 17l-5-5 5-5" />
+                                        <path d="M5 12h11" />
+                                    </svg>
                                     Выйти
-                                </Button>
+                                </button>
                             </>
                         ) : (
                             <>

@@ -58,7 +58,7 @@ authHost.interceptors.response.use(
 
 export function parseApiError(error) {
     if (!error.response) {
-        return { message: "Сервер недоступен.", fieldErrors: {} }
+        return { message: "Сервер недоступен. Проверьте, что он запущен.", fieldErrors: {} }
     }
 
     const { message, errors = [] } = error.response.data || {}
@@ -87,6 +87,10 @@ export const userApi = {
 
 export const adminApi = {
     getStats: () => authHost.get("/admin/stats").then((res) => res.data),
+
+    getCourses: (params) => authHost.get("/admin/courses", { params }).then((res) => res.data),
+
+    moderateCourse: (id, decision) => authHost.patch(`/admin/courses/${id}`, decision).then((res) => res.data),
 
     getReviews: (params) => authHost.get("/admin/reviews", { params }).then((res) => res.data),
 
@@ -148,6 +152,10 @@ export const notificationApi = {
 
 export const teacherApi = {
     getCourses: () => authHost.get("/teacher/courses").then((res) => res.data),
+    getCourse: (id) => authHost.get(`/teacher/courses/${id}`).then((res) => res.data),
+    createCourse: (payload) => authHost.post("/teacher/courses", payload).then((res) => res.data),
+    updateCourse: (id, payload) => authHost.put(`/teacher/courses/${id}`, payload).then((res) => res.data),
+    removeCourse: (id) => authHost.delete(`/teacher/courses/${id}`).then((res) => res.data),
     getReviews: (params) => authHost.get("/teacher/reviews", { params }).then((res) => res.data),
     saveReply: (reviewId, text) => authHost.put(`/teacher/reviews/${reviewId}/reply`, { text }).then((res) => res.data),
     removeReply: (reviewId) => authHost.delete(`/teacher/reviews/${reviewId}/reply`).then((res) => res.data)

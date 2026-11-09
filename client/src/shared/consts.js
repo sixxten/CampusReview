@@ -5,12 +5,16 @@ export const ROUTES = {
     PROFILE: "/profile",
     ADMIN: "/admin",
     COURSE: "/courses/:id",
-    REVIEW_FORM: "/courses/:id/review"
+    REVIEW_FORM: "/courses/:id/review",
+    COURSE_NEW: "/teacher/courses/new",
+    COURSE_EDIT: "/teacher/courses/:id/edit"
 }
 
 export const courseRoute = (id) => ROUTES.COURSE.replace(":id", id)
 
 export const reviewFormRoute = (id) => ROUTES.REVIEW_FORM.replace(":id", id)
+
+export const courseEditRoute = (id) => ROUTES.COURSE_EDIT.replace(":id", id)
 
 export const profileTabRoute = (tab) => `${ROUTES.PROFILE}?tab=${tab}`
 
