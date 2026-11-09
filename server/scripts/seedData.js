@@ -36,7 +36,6 @@ const students = [
 ]
 
 const courses = [
-    // ---------- ИТ ----------
     {
         title: "Базы данных",
         teacher: "i.ivanov@campus.ru",
@@ -146,7 +145,6 @@ const courses = [
         ].join("\n")
     },
 
-    // ---------- Экономика ----------
     {
         title: "Микроэкономика",
         teacher: "e.sokolova@campus.ru",
@@ -212,7 +210,6 @@ const courses = [
         program: null
     },
 
-    // ---------- Гуманитарный ----------
     {
         title: "История науки",
         teacher: "p.sidorov@campus.ru",
@@ -277,7 +274,6 @@ const courses = [
         program: null
     },
 
-    // ---------- Естественные науки ----------
     {
         title: "Физика для инженеров",
         teacher: "o.lebedeva@campus.ru",
@@ -333,4 +329,10 @@ const courses = [
     }
 ]
 
-module.exports = { DEMO_PASSWORD, faculties, semesters, teachers, students, courses }
+const favorites = {
+    "m.kuznetsova@campus.ru": ["Машинное обучение", "Анализ данных на Python", "Микроэкономика"],
+    "a.smirnov@campus.ru": ["Алгоритмы и структуры данных", "Финансовый анализ"],
+    "k.vasiliev@campus.ru": ["Академическое письмо"]
+}
+
+module.exports = { DEMO_PASSWORD, faculties, semesters, teachers, students, courses, favorites }

@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs")
 const sequelize = require("../db")
-const { User, Faculty, Semester, Course, Review } = require("../models")
+const { User, Faculty, Semester, Course, Review, Favorite } = require("../models")
 const reviewService = require("../services/reviewService")
 const data = require("./seedData")
 const { reviews } = require("./seedReviews")
@@ -76,6 +76,12 @@ async function seed() {
         })
     }
 
+    for (const [email, titles] of Object.entries(data.favorites)) {
+        for (const title of titles) {
+            await Favorite.findOrCreate({ where: { userId: users[email].id, courseId: courses[title].id } })
+        }
+    }
+
     for (const course of Object.values(courses)) {
         await reviewService.recalcCourseRating(course.id)
     }
@@ -86,6 +92,7 @@ async function seed() {
     console.log(`  пользователей: ${await User.count()}`)
     console.log(`  курсов: ${await Course.count()} (опубликовано: ${await Course.count({ where: { status: "published" } })})`)
     console.log(`  отзывов: ${await Review.count()} (опубликовано: ${await Review.count({ where: { status: "published" } })})`)
+    console.log(`  в избранном: ${await Favorite.count()}`)
     console.log(`Пароль демо-пользователей: ${data.DEMO_PASSWORD}`)
 }
 

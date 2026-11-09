@@ -4,6 +4,8 @@ const { Faculty } = require("./Faculty")
 const { Semester, SEASONS } = require("./Semester")
 const { Course, COURSE_FORMATS, COURSE_STATUSES } = require("./Course")
 const { Review, REVIEW_STATUSES, SCORE_FIELDS } = require("./Review")
+const { Favorite } = require("./Favorite")
+
 
 User.hasMany(Token, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
 Token.belongsTo(User, { foreignKey: "userId" })
@@ -31,6 +33,11 @@ Semester.hasMany(Review, { foreignKey: { name: "semesterId", allowNull: true }, 
 
 Review.belongsTo(User, { as: "moderator", foreignKey: { name: "moderatorId", allowNull: true }, onDelete: "SET NULL" })
 
+Favorite.belongsTo(User, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+User.hasMany(Favorite, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+Favorite.belongsTo(Course, { foreignKey: { name: "courseId", allowNull: false }, onDelete: "CASCADE" })
+Course.hasMany(Favorite, { foreignKey: { name: "courseId", allowNull: false }, onDelete: "CASCADE" })
+
 module.exports = {
     User,
     Token,
@@ -38,6 +45,7 @@ module.exports = {
     Semester,
     Course,
     Review,
+    Favorite,
     ROLES,
     STATUSES,
     SEASONS,
