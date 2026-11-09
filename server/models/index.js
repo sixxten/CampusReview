@@ -5,7 +5,7 @@ const { Semester, SEASONS } = require("./Semester")
 const { Course, COURSE_FORMATS, COURSE_STATUSES } = require("./Course")
 const { Review, REVIEW_STATUSES, SCORE_FIELDS } = require("./Review")
 const { Favorite } = require("./Favorite")
-
+const { Complaint, COMPLAINT_REASONS, COMPLAINT_STATUSES } = require("./Complaint")
 
 User.hasMany(Token, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
 Token.belongsTo(User, { foreignKey: "userId" })
@@ -38,6 +38,14 @@ User.hasMany(Favorite, { foreignKey: { name: "userId", allowNull: false }, onDel
 Favorite.belongsTo(Course, { foreignKey: { name: "courseId", allowNull: false }, onDelete: "CASCADE" })
 Course.hasMany(Favorite, { foreignKey: { name: "courseId", allowNull: false }, onDelete: "CASCADE" })
 
+Complaint.belongsTo(Review, { foreignKey: { name: "reviewId", allowNull: false }, onDelete: "CASCADE" })
+Review.hasMany(Complaint, { foreignKey: { name: "reviewId", allowNull: false }, onDelete: "CASCADE" })
+
+Complaint.belongsTo(User, { as: "author", foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+User.hasMany(Complaint, { as: "complaints", foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+
+Complaint.belongsTo(User, { as: "moderator", foreignKey: { name: "moderatorId", allowNull: true }, onDelete: "SET NULL" })
+
 module.exports = {
     User,
     Token,
@@ -46,11 +54,14 @@ module.exports = {
     Course,
     Review,
     Favorite,
+    Complaint,
     ROLES,
     STATUSES,
     SEASONS,
     COURSE_FORMATS,
     COURSE_STATUSES,
     REVIEW_STATUSES,
-    SCORE_FIELDS
+    SCORE_FIELDS,
+    COMPLAINT_REASONS,
+    COMPLAINT_STATUSES
 }

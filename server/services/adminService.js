@@ -1,15 +1,16 @@
 const { Op } = require("sequelize")
-const { User, Token, Review } = require("../models")
+const { User, Token, Review, Complaint } = require("../models")
 const ApiError = require("../exceptions/ApiError")
 const { toUserData } = require("./userService")
 
 class AdminService {
     async getStats() {
-        const [pendingReviews, pendingTeachers] = await Promise.all([
+        const [pendingReviews, pendingTeachers, pendingComplaints] = await Promise.all([
             Review.count({ where: { status: "pending" } }),
-            User.count({ where: { status: "pending" } })
+            User.count({ where: { status: "pending" } }),
+            Complaint.count({ where: { status: "new" } })
         ])
-        return { pendingReviews, pendingTeachers }
+        return { pendingReviews, pendingTeachers, pendingComplaints }
     }
 
     async getUsers({ search, role, status, page = 1, limit = 20 }) {

@@ -1,9 +1,9 @@
 const bcrypt = require("bcryptjs")
 const sequelize = require("../db")
-const { User, Faculty, Semester, Course, Review, Favorite } = require("../models")
+const { User, Faculty, Semester, Course, Review, Favorite, Complaint } = require("../models")
 const reviewService = require("../services/reviewService")
 const data = require("./seedData")
-const { reviews } = require("./seedReviews")
+const { reviews, complaints } = require("./seedReviews")
 
 async function seed() {
     await sequelize.authenticate()
@@ -82,6 +82,15 @@ async function seed() {
         }
     }
 
+    for (const { from, reviewAuthor, course, status, ...fields } of complaints) {
+        const review = await Review.findOne({ where: { userId: users[reviewAuthor].id, courseId: courses[course].id } })
+        if (!review) continue
+        await Complaint.findOrCreate({
+            where: { userId: users[from].id, reviewId: review.id },
+            defaults: { ...fields, status: status || "new", resolvedAt: status ? new Date() : null }
+        })
+    }
+
     for (const course of Object.values(courses)) {
         await reviewService.recalcCourseRating(course.id)
     }
@@ -93,6 +102,7 @@ async function seed() {
     console.log(`  курсов: ${await Course.count()} (опубликовано: ${await Course.count({ where: { status: "published" } })})`)
     console.log(`  отзывов: ${await Review.count()} (опубликовано: ${await Review.count({ where: { status: "published" } })})`)
     console.log(`  в избранном: ${await Favorite.count()}`)
+    console.log(`  жалоб: ${await Complaint.count()} (новых: ${await Complaint.count({ where: { status: "new" } })})`)
     console.log(`Пароль демо-пользователей: ${data.DEMO_PASSWORD}`)
 }
 

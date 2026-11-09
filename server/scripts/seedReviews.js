@@ -182,4 +182,29 @@ const reviews = [
         null, null, { status: "draft" })
 ]
 
-module.exports = { reviews }
+const complaints = [
+    {
+        from: KIRILL,
+        reviewAuthor: ALEXEY,
+        course: "Философия",
+        reason: "false_info",
+        comment: "Требования на экзамене не завышены: всё спрашивали строго по программе курса."
+    },
+    {
+        from: "o.lebedeva@campus.ru", // преподаватель курса
+        reviewAuthor: NIKITA,
+        course: "Физика для инженеров",
+        reason: "false_info",
+        comment: "На семинарах разбираются все вопросы из домашних заданий — это видно по записям занятий."
+    },
+    {
+        from: DARIA,
+        reviewAuthor: KIRILL,
+        course: "Микроэкономика",
+        reason: "offensive",
+        comment: null,
+        status: "rejected"
+    }
+]
+
+module.exports = { reviews, complaints }

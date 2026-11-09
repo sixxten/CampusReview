@@ -28,7 +28,7 @@ function assertComplete(fields) {
     }
     const textLength = TEXT_FIELDS.reduce((sum, name) => sum + (fields[name]?.length || 0), 0)
     if (textLength < MIN_TEXT_LENGTH) {
-        errors.push({ path: "pros", msg: "Напишите хотя бы пару предложений о курсе" })
+        errors.push({ path: "texts", msg: "Напишите хотя бы пару предложений о курсе" })
     }
     if (errors.length) {
         throw ApiError.BadRequest("Заполните анкету полностью", errors)

@@ -7,7 +7,9 @@ const {
     getUsersValidator,
     updateStatusValidator,
     getReviewsValidator,
-    moderateReviewValidator
+    moderateReviewValidator,
+    getComplaintsValidator,
+    resolveComplaintValidator
 } = require("../validators/adminValidators")
 
 const router = new Router()
@@ -21,5 +23,8 @@ router.patch("/users/:id/status", updateStatusValidator, validate, adminControll
 
 router.get("/reviews", getReviewsValidator, validate, adminController.getReviews)
 router.patch("/reviews/:id", moderateReviewValidator, validate, adminController.moderateReview)
+
+router.get("/complaints", getComplaintsValidator, validate, adminController.getComplaints)
+router.patch("/complaints/:id", resolveComplaintValidator, validate, adminController.resolveComplaint)
 
 module.exports = router
