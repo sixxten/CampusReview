@@ -105,6 +105,24 @@ class NotificationService {
         })
     }
 
+    coursePublished(course) {
+        return this.notify(course.teacherId, {
+            type: "course_published",
+            title: `Курс «${course.title}» опубликован`,
+            message: "Курс появился в каталоге, студенты уже могут оставлять отзывы.",
+            link: courseLink(course.id)
+        })
+    }
+
+    courseRejected(course) {
+        return this.notify(course.teacherId, {
+            type: "course_rejected",
+            title: `Курс «${course.title}» отклонён`,
+            message: `Причина: ${course.rejectionReason}. Исправьте курс и отправьте его снова.`,
+            link: `/teacher/courses/${course.id}/edit`
+        })
+    }
+
     teacherApproved(userId) {
         return this.notify(userId, {
             type: "teacher_approved",

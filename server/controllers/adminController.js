@@ -2,6 +2,8 @@ const { matchedData } = require("express-validator")
 const adminService = require("../services/adminService")
 const reviewService = require("../services/reviewService")
 const complaintService = require("../services/complaintService")
+const courseService = require("../services/courseService")
+
 class AdminController {
     async getStats(req, res, next) {
         try {
@@ -44,6 +46,25 @@ class AdminController {
             const { id } = matchedData(req, { locations: ["params"] })
             const decision = matchedData(req, { locations: ["body"] })
             return res.json(await reviewService.moderate(req.user.id, id, decision))
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async getCourses(req, res, next) {
+        try {
+            const filters = matchedData(req, { locations: ["query"] })
+            return res.json(await courseService.getForModeration(filters))
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async moderateCourse(req, res, next) {
+        try {
+            const { id } = matchedData(req, { locations: ["params"] })
+            const decision = matchedData(req, { locations: ["body"] })
+            return res.json(await courseService.moderate(id, decision))
         } catch (e) {
             next(e)
         }

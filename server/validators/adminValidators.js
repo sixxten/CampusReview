@@ -1,4 +1,5 @@
 const { body, param, query } = require("express-validator")
+
 const ROLES = ["student", "teacher", "admin"]
 const STATUSES = ["active", "pending", "blocked"]
 const MODERATION_STATUSES = ["pending", "published", "rejected"]
@@ -31,23 +32,42 @@ const getReviewsValidator = [
 const moderateReviewValidator = [
     param("id").isInt({ min: 1 }).withMessage("Некорректный id").toInt(),
     body("status").isIn(["published", "rejected"]).withMessage("Решение: published или rejected"),
-    // причина обязательна только при отклонении
     body("rejectionReason")
         .if(body("status").equals("rejected"))
         .isString().withMessage("Укажите причину отклонения")
         .trim()
         .isLength({ min: 5, max: 500 }).withMessage("Причина — от 5 до 500 символов")
 ]
+
 const getComplaintsValidator = [
     query("status").optional({ values: "falsy" }).isIn(["new", "accepted", "rejected"]).withMessage("Неизвестный статус жалобы"),
     ...pagination
 ]
+
 const resolveComplaintValidator = [
     param("id").isInt({ min: 1 }).withMessage("Некорректный id").toInt(),
     body("status").isIn(["accepted", "rejected"]).withMessage("Решение: accepted или rejected")
 ]
 
+const getCoursesValidator = [
+    searchQuery,
+    query("status").optional({ values: "falsy" }).isIn(MODERATION_STATUSES).withMessage("Неизвестный статус курса"),
+    ...pagination
+]
+
+const moderateCourseValidator = [
+    param("id").isInt({ min: 1 }).withMessage("Некорректный id").toInt(),
+    body("status").isIn(["published", "rejected"]).withMessage("Решение: published или rejected"),
+    body("rejectionReason")
+        .if(body("status").equals("rejected"))
+        .isString().withMessage("Укажите причину отклонения")
+        .trim()
+        .isLength({ min: 5, max: 500 }).withMessage("Причина — от 5 до 500 символов")
+]
+
 module.exports = {
+    getCoursesValidator,
+    moderateCourseValidator,
     getUsersValidator,
     updateStatusValidator,
     getReviewsValidator,

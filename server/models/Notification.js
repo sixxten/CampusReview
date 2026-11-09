@@ -9,7 +9,9 @@ const NOTIFICATION_TYPES = [
     "teacher_approved",
     "account_unblocked",
     "course_new_review",
-    "review_reply"
+    "review_reply",
+    "course_published",
+    "course_rejected"
 ]
 
 const Notification = sequelize.define("notification", {

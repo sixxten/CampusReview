@@ -2,6 +2,7 @@ const { Op } = require("sequelize")
 const sequelize = require("../db")
 const { Course, Faculty, Semester, User } = require("../models")
 const ApiError = require("../exceptions/ApiError")
+const notificationService = require("./notificationService")
 
 const DIFFICULTY_RANGES = {
     low: { [Op.gt]: 0, [Op.lt]: 2.5 },
@@ -83,6 +84,57 @@ class CourseService {
             Semester.findAll({ attributes: ["id", "name", "year", "season"], order: [["year", "DESC"], ["season", "ASC"]] })
         ])
         return { faculties, semesters }
+    }
+
+    async getForModeration({ status = "pending", search, page = 1, limit = 10 }) {
+        const where = { status }
+        if (search) {
+            const pattern = `%${search}%`
+            where[Op.or] = [
+                { title: { [Op.iLike]: pattern } },
+                { "$teacher.firstName$": { [Op.iLike]: pattern } },
+                { "$teacher.lastName$": { [Op.iLike]: pattern } }
+            ]
+        }
+
+        const { rows, count } = await Course.findAndCountAll({
+            where,
+            include: [
+                { model: Faculty, attributes: ["id", "name", "shortName"] },
+                { model: Semester, attributes: ["id", "name"] },
+                { model: User, as: "teacher", attributes: ["id", "firstName", "lastName", "email"] }
+            ],
+            order: status === "pending" ? [["updatedAt", "ASC"]] : [["moderatedAt", "DESC NULLS LAST"], ["updatedAt", "DESC"]],
+            limit,
+            offset: (page - 1) * limit,
+            subQuery: false,
+            distinct: true
+        })
+
+        return { courses: rows, total: count, page, pages: Math.max(1, Math.ceil(count / limit)) }
+    }
+
+    async moderate(courseId, { status, rejectionReason }) {
+        const course = await Course.findByPk(courseId)
+        if (!course) {
+            throw ApiError.NotFound("Курс не найден")
+        }
+        if (course.status !== "pending") {
+            throw ApiError.BadRequest("Этот курс уже проверен или ещё не отправлен на модерацию")
+        }
+
+        await course.update({
+            status,
+            rejectionReason: status === "rejected" ? rejectionReason : null,
+            moderatedAt: new Date()
+        })
+
+        if (status === "published") {
+            await notificationService.coursePublished(course)
+        } else {
+            await notificationService.courseRejected(course)
+        }
+        return course
     }
 }
 

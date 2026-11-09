@@ -36,6 +36,7 @@ const Course = sequelize.define("course", {
         defaultValue: "draft"
     },
     rejectionReason: { type: DataTypes.TEXT, allowNull: true },
+    moderatedAt: { type: DataTypes.DATE, allowNull: true },
 
     avgRating: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
     avgDifficulty: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
