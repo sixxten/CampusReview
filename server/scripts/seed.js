@@ -1,7 +1,8 @@
 const bcrypt = require("bcryptjs")
 const sequelize = require("../db")
-const { User, Faculty, Semester, Course, Review, Favorite, Complaint } = require("../models")
+const { User, Faculty, Semester, Course, Review, Favorite, Complaint, Notification } = require("../models")
 const reviewService = require("../services/reviewService")
+const notificationService = require("../services/notificationService")
 const data = require("./seedData")
 const { reviews, complaints } = require("./seedReviews")
 
@@ -95,6 +96,10 @@ async function seed() {
         await reviewService.recalcCourseRating(course.id)
     }
 
+    if ((await Notification.count()) === 0) {
+        await seedNotifications()
+    }
+
     console.log("Готово! Сейчас в базе:")
     console.log(`  факультетов: ${await Faculty.count()}`)
     console.log(`  семестров:   ${await Semester.count()}`)
@@ -103,7 +108,38 @@ async function seed() {
     console.log(`  отзывов: ${await Review.count()} (опубликовано: ${await Review.count({ where: { status: "published" } })})`)
     console.log(`  в избранном: ${await Favorite.count()}`)
     console.log(`  жалоб: ${await Complaint.count()} (новых: ${await Complaint.count({ where: { status: "new" } })})`)
+    console.log(`  уведомлений: ${await Notification.count()} (непрочитанных: ${await Notification.count({ where: { isRead: false } })})`)
     console.log(`Пароль демо-пользователей: ${data.DEMO_PASSWORD}`)
+}
+
+async function seedNotifications() {
+    const reviews = await Review.findAll({
+        where: { status: ["published", "rejected"] },
+        include: [{ model: Course, attributes: ["id", "title", "teacherId"] }],
+        order: [["id", "ASC"]]
+    })
+
+    for (const [index, review] of reviews.entries()) {
+        const isRecent = index >= reviews.length - 4
+        const created = []
+        if (review.status === "published") {
+            created.push(await notificationService.reviewPublished(review, review.course))
+            created.push(await notificationService.newReviewOnCourse(review.course))
+        } else {
+            created.push(await notificationService.reviewRejected(review, review.course))
+        }
+        if (!isRecent && review.status === "published") {
+            for (const notification of created) await notification.update({ isRead: true })
+        }
+    }
+
+    const resolved = await Complaint.findAll({
+        where: { status: ["accepted", "rejected"] },
+        include: [{ model: Review, include: [{ model: Course, attributes: ["id", "title"] }] }]
+    })
+    for (const complaint of resolved) {
+        await notificationService.complaintResolved(complaint, complaint.review.course, complaint.status === "accepted")
+    }
 }
 
 seed()

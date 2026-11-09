@@ -1,6 +1,7 @@
 const { Complaint, Review, Course, Semester, User } = require("../models")
 const ApiError = require("../exceptions/ApiError")
 const reviewService = require("./reviewService")
+const notificationService = require("./notificationService")
 
 const REASON_TEXT = {
     offensive: "оскорбления или переход на личности",
@@ -67,13 +68,16 @@ class ComplaintService {
 
         const resolution = { status, moderatorId: adminId, resolvedAt: new Date() }
 
+        const review = await Review.findByPk(complaint.reviewId)
+        const course = await Course.findByPk(review.courseId, { attributes: ["id", "title"] })
+
         if (status === "rejected") {
             await complaint.update(resolution)
+            await notificationService.complaintResolved(complaint, course, false)
             return complaint
         }
 
-        const review = await Review.findByPk(complaint.reviewId)
-        if (review && review.status === "published") {
+        if (review.status === "published") {
             await review.update({
                 status: "rejected",
                 rejectionReason: `Скрыт по жалобе: ${REASON_TEXT[complaint.reason]}. Исправьте отзыв и отправьте его на проверку снова.`,
@@ -81,9 +85,14 @@ class ComplaintService {
                 moderatedAt: new Date()
             })
             await reviewService.recalcCourseRating(review.courseId)
+            await notificationService.reviewHidden(review, course)
         }
 
+        const others = await Complaint.findAll({ where: { reviewId: complaint.reviewId, status: "new" } })
         await Complaint.update(resolution, { where: { reviewId: complaint.reviewId, status: "new" } })
+        for (const item of others) {
+            await notificationService.complaintResolved(item, course, true)
+        }
         return complaint.reload()
     }
 }

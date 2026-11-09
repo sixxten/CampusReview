@@ -1,6 +1,7 @@
 const { Op, fn, col } = require("sequelize")
 const { Review, Course, Semester, User, SCORE_FIELDS } = require("../models")
 const ApiError = require("../exceptions/ApiError")
+const notificationService = require("./notificationService")
 
 const TEXT_FIELDS = ["pros", "cons", "advice"]
 const EDITABLE_STATUSES = ["draft", "pending", "rejected"]
@@ -51,7 +52,6 @@ function toPublicReview(review) {
 }
 
 class ReviewService {
-
     async assertActiveStudent(userId) {
         const user = await User.findByPk(userId)
         if (!user || user.role !== "student") {
@@ -259,8 +259,13 @@ class ReviewService {
             moderatedAt: new Date()
         })
 
+        const course = await Course.findByPk(review.courseId, { attributes: ["id", "title", "teacherId"] })
         if (status === "published") {
             await this.recalcCourseRating(review.courseId)
+            await notificationService.reviewPublished(review, course)
+            await notificationService.newReviewOnCourse(course)
+        } else {
+            await notificationService.reviewRejected(review, course)
         }
         return review
     }

@@ -2,6 +2,7 @@ const { Op } = require("sequelize")
 const { User, Token, Review, Complaint } = require("../models")
 const ApiError = require("../exceptions/ApiError")
 const { toUserData } = require("./userService")
+const notificationService = require("./notificationService")
 
 class AdminService {
     async getStats() {
@@ -57,7 +58,15 @@ class AdminService {
             throw ApiError.Forbidden("Нельзя изменить статус администратора")
         }
 
+        const previousStatus = user.status
         await user.update({ status })
+
+        if (status === "active" && previousStatus === "pending") {
+            await notificationService.teacherApproved(user.id)
+        }
+        if (status === "active" && previousStatus === "blocked") {
+            await notificationService.accountUnblocked(user.id)
+        }
 
         if (status === "blocked") {
             await Token.destroy({ where: { userId } })

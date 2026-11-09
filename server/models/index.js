@@ -6,6 +6,7 @@ const { Course, COURSE_FORMATS, COURSE_STATUSES } = require("./Course")
 const { Review, REVIEW_STATUSES, SCORE_FIELDS } = require("./Review")
 const { Favorite } = require("./Favorite")
 const { Complaint, COMPLAINT_REASONS, COMPLAINT_STATUSES } = require("./Complaint")
+const { Notification, NOTIFICATION_TYPES } = require("./Notification")
 
 User.hasMany(Token, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
 Token.belongsTo(User, { foreignKey: "userId" })
@@ -46,6 +47,9 @@ User.hasMany(Complaint, { as: "complaints", foreignKey: { name: "userId", allowN
 
 Complaint.belongsTo(User, { as: "moderator", foreignKey: { name: "moderatorId", allowNull: true }, onDelete: "SET NULL" })
 
+Notification.belongsTo(User, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+User.hasMany(Notification, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+
 module.exports = {
     User,
     Token,
@@ -55,6 +59,7 @@ module.exports = {
     Review,
     Favorite,
     Complaint,
+    Notification,
     ROLES,
     STATUSES,
     SEASONS,
@@ -63,5 +68,6 @@ module.exports = {
     REVIEW_STATUSES,
     SCORE_FIELDS,
     COMPLAINT_REASONS,
-    COMPLAINT_STATUSES
+    COMPLAINT_STATUSES,
+    NOTIFICATION_TYPES
 }
