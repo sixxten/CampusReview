@@ -12,16 +12,18 @@ import { ProfileForm } from "./ProfileForm"
 import { PasswordForm } from "./PasswordForm"
 import { MyReviewsTab } from "./MyReviewsTab"
 import { FavoritesTab } from "./FavoritesTab"
+import { NotificationsTab } from "./NotificationsTab"
 import styles from "./ProfilePage.module.css"
 
-const STUDENT_TABS = [
-    { id: "reviews", label: "Мои отзывы" },
-    { id: "favorites", label: "Избранное" },
+const TABS = [
+    { id: "reviews", label: "Мои отзывы", roles: [ROLES.STUDENT] },
+    { id: "favorites", label: "Избранное", roles: [ROLES.STUDENT] },
+    { id: "notifications", label: "Уведомления" },
     { id: "settings", label: "Настройки" }
 ]
 
 export const ProfilePage = observer(() => {
-    const { userStore } = useStores()
+    const { userStore, notificationStore } = useStores()
     const navigate = useNavigate()
     const [loggingOut, setLoggingOut] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
@@ -42,19 +44,10 @@ export const ProfilePage = observer(() => {
     const { user } = userStore
     if (!user) return null
 
-    const isStudent = user.role === ROLES.STUDENT
+    const tabs = TABS.filter((item) => !item.roles || item.roles.includes(user.role))
     const requestedTab = searchParams.get("tab")
-    let tab = "settings"
-    if (isStudent) {
-        tab = STUDENT_TABS.some((item) => item.id === requestedTab) ? requestedTab : "reviews"
-    }
-
-    const settings = (
-        <div className={styles.forms}>
-            <ProfileForm key={user.id} />
-            <PasswordForm />
-        </div>
-    )
+    const tab = tabs.some((item) => item.id === requestedTab) ? requestedTab : tabs[0].id
+    const unread = notificationStore.unreadCount
 
     return (
         <div className={`container ${styles.page}`}>
@@ -84,33 +77,39 @@ export const ProfilePage = observer(() => {
                 </Button>
             </Card>
 
-            {isStudent ? (
-                <>
-                    <div className={styles.tabs} role="tablist" aria-label="Разделы личного кабинета">
-                        {STUDENT_TABS.map((item) => (
-                            <button
-                                key={item.id}
-                                type="button"
-                                role="tab"
-                                id={`tab-${item.id}`}
-                                aria-selected={tab === item.id}
-                                aria-controls={`panel-${item.id}`}
-                                className={`${styles.tab} ${tab === item.id ? styles.tabActive : ""}`}
-                                onClick={() => setSearchParams({ tab: item.id })}
-                            >
-                                {item.label}
-                            </button>
-                        ))}
+            <div className={styles.tabs} role="tablist" aria-label="Разделы личного кабинета">
+                {tabs.map((item) => (
+                    <button
+                        key={item.id}
+                        type="button"
+                        role="tab"
+                        id={`tab-${item.id}`}
+                        aria-selected={tab === item.id}
+                        aria-controls={`panel-${item.id}`}
+                        className={`${styles.tab} ${tab === item.id ? styles.tabActive : ""}`}
+                        onClick={() => setSearchParams({ tab: item.id })}
+                    >
+                        {item.label}
+                        {item.id === "notifications" && unread > 0 && (
+                            <span className={styles.tabCounter}>
+                                {unread}
+                                <span className="visually-hidden"> непрочитанных</span>
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
+            <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
+                {tab === "reviews" && <MyReviewsTab />}
+                {tab === "favorites" && <FavoritesTab />}
+                {tab === "notifications" && <NotificationsTab />}
+                {tab === "settings" && (
+                    <div className={styles.forms}>
+                        <ProfileForm key={user.id} />
+                        <PasswordForm />
                     </div>
-                    <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
-                        {tab === "reviews" && <MyReviewsTab />}
-                        {tab === "favorites" && <FavoritesTab />}
-                        {tab === "settings" && settings}
-                    </div>
-                </>
-            ) : (
-                settings
-            )}
+                )}
+            </div>
         </div>
     )
 })

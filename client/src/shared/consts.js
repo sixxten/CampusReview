@@ -12,6 +12,8 @@ export const courseRoute = (id) => ROUTES.COURSE.replace(":id", id)
 
 export const reviewFormRoute = (id) => ROUTES.REVIEW_FORM.replace(":id", id)
 
+export const profileTabRoute = (tab) => `${ROUTES.PROFILE}?tab=${tab}`
+
 export const ROLES = {
     STUDENT: "student",
     TEACHER: "teacher",

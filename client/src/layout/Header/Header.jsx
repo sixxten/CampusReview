@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom"
 import { useStores } from "@/store"
 import { ROLES, ROUTES } from "@/shared/consts"
 import { Button } from "@/ui/Button"
+import { NotificationBell } from "./NotificationBell"
 import styles from "./Header.module.css"
 
 const NAV_ITEMS = [
@@ -36,6 +37,8 @@ export const Header = observer(() => {
                 <Link to={ROUTES.HOME} className={styles.logo}>
                     Campus<span className={styles.logoAccent}>Review</span>
                 </Link>
+
+                {userStore.isAuth && <NotificationBell className={styles.bellSlot} onOpen={() => setMenuOpen(false)} />}
 
                 <button
                     type="button"

@@ -138,3 +138,10 @@ export const favoriteApi = {
 export const complaintApi = {
     create: (payload) => authHost.post("/complaints", payload).then((res) => res.data)
 }
+
+export const notificationApi = {
+    getMy: (params) => authHost.get("/notifications", { params }).then((res) => res.data),
+    getUnreadCount: () => authHost.get("/notifications/unread-count").then((res) => res.data.count),
+    markRead: (id) => authHost.patch(`/notifications/${id}/read`).then((res) => res.data),
+    markAllRead: () => authHost.patch("/notifications/read-all").then((res) => res.data)
+}
