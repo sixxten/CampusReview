@@ -86,6 +86,12 @@ export const userApi = {
 }
 
 export const adminApi = {
+    getStats: () => authHost.get("/admin/stats").then((res) => res.data),
+
+    getReviews: (params) => authHost.get("/admin/reviews", { params }).then((res) => res.data),
+
+    moderateReview: (id, decision) => authHost.patch(`/admin/reviews/${id}`, decision).then((res) => res.data),
+
     getUsers: (params) => authHost.get("/admin/users", { params }).then((res) => res.data),
 
     updateUserStatus: (id, status) =>
