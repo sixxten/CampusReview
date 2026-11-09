@@ -9,6 +9,7 @@ import { Button } from "@/ui/Button"
 import { Card } from "@/ui/Card"
 import { Spinner } from "@/ui/Spinner"
 import { CourseRating } from "./CourseRating"
+import { FavoriteButton } from "./FavoriteButton"
 import { CourseReviews } from "./CourseReviews"
 import styles from "./CoursePage.module.css"
 
@@ -87,7 +88,10 @@ export function CoursePage() {
             {notice && <Alert tone="success">{notice}</Alert>}
 
             <Card as="header" className={styles.header}>
-                <h1>{course.title}</h1>
+                <div className={styles.headerTop}>
+                    <h1>{course.title}</h1>
+                    <FavoriteButton courseId={id} />
+                </div>
                 <p className={styles.meta}>
                     {teacher.firstName} {teacher.lastName} · {faculty.name} · {semester.name}
                 </p>

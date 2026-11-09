@@ -5,7 +5,7 @@ import { courseRoute, FORMAT_LABELS } from "@/shared/consts"
 import { formatRating, getDifficultyLabel, plural } from "@/shared/utils"
 import styles from "./CourseCard.module.css"
 
-export function CourseCard({ course }) {
+export function CourseCard({ course, actions }) {
     const { teacher, faculty, semester } = course
     const hasReviews = course.reviewsCount > 0
 
@@ -29,6 +29,7 @@ export function CourseCard({ course }) {
                         <Badge tone="neutral">Сложность: {getDifficultyLabel(course.avgDifficulty).toLowerCase()}</Badge>
                     )}
                 </div>
+                {actions && <div className={styles.actions}>{actions}</div>}
             </div>
 
             <div className={styles.rating}>

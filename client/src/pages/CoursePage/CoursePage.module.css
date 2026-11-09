@@ -20,7 +20,6 @@
     font-size: 14px;
 }
 
-/* Шапка курса */
 .header {
     display: flex;
     flex-direction: column;
@@ -38,7 +37,6 @@
     margin-top: var(--space-1);
 }
 
-/* Основная колонка + боковая панель */
 .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 340px;
@@ -294,4 +292,17 @@
     .bar {
         grid-template-columns: 120px 1fr 32px;
     }
+}
+
+.headerTop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.favoriteActive,
+.favoriteActive:hover:not(:disabled) {
+    background: var(--color-primary-soft);
 }

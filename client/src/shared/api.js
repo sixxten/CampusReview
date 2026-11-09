@@ -58,7 +58,7 @@ authHost.interceptors.response.use(
 
 export function parseApiError(error) {
     if (!error.response) {
-        return { message: "Сервер недоступен. Проверьте, что он запущен.", fieldErrors: {} }
+        return { message: "Сервер недоступен.", fieldErrors: {} }
     }
 
     const { message, errors = [] } = error.response.data || {}
@@ -119,4 +119,14 @@ export const reviewApi = {
     update: (id, payload) => authHost.put(`/reviews/${id}`, payload).then((res) => res.data),
 
     remove: (id) => authHost.delete(`/reviews/${id}`).then((res) => res.data)
+}
+
+export const favoriteApi = {
+    getMy: () => authHost.get("/favorites").then((res) => res.data),
+
+    getIds: () => authHost.get("/favorites/ids").then((res) => res.data),
+
+    add: (courseId) => authHost.post(`/favorites/${courseId}`).then((res) => res.data),
+
+    remove: (courseId) => authHost.delete(`/favorites/${courseId}`).then((res) => res.data)
 }

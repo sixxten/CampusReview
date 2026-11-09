@@ -76,7 +76,7 @@ export const ProfileForm = observer(() => {
                     onChange={handleChange}
                     error={errors.lastName}
                 />
-                <Input label="Email" value={user.email}/>
+                <Input label="Email" value={user.email} disabled hint="Email изменить нельзя" />
                 <Button type="submit" loading={loading} disabled={!changed} className={styles.submit}>
                     Сохранить
                 </Button>

@@ -49,7 +49,9 @@ function validateForSubmit(form) {
         if (form[key] == null) errors[key] = "Поставьте оценку"
     }
     const textLength = TEXT_FIELDS.reduce((sum, { key }) => sum + form[key].trim().length, 0)
-    if (textLength < REVIEW_MIN_TEXT) errors.pros = "Напишите хотя бы пару предложений о курсе"
+     if (textLength < REVIEW_MIN_TEXT) {
+        errors.texts = `Напишите хотя бы пару предложений — в любом из полей ниже, от ${REVIEW_MIN_TEXT} символов`
+    }
     return errors
 }
 
@@ -146,7 +148,6 @@ export function ReviewFormPage() {
 
     const { course, review, semesters } = loaded
 
-    // опубликованный отзыв больше не редактируется
     if (review?.status === REVIEW_STATUS.PUBLISHED) {
         return (
             <div className={`container ${styles.page}`}>
@@ -223,6 +224,7 @@ export function ReviewFormPage() {
 
                 <section className={styles.block} aria-labelledby="texts-title">
                     <h2 id="texts-title">Ваш опыт</h2>
+                    {errors.texts && <p className={styles.textsError}>{errors.texts}</p>}
                     {TEXT_FIELDS.map((field) => (
                         <Textarea
                             key={field.key}

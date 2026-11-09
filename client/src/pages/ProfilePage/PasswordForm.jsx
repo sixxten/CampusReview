@@ -8,7 +8,6 @@ import styles from "./ProfilePage.module.css"
 
 const EMPTY_FORM = { currentPassword: "", newPassword: "", newPasswordRepeat: "" }
 
-// Форма «Смена пароля»
 export function PasswordForm() {
     const [form, setForm] = useState(EMPTY_FORM)
     const [errors, setErrors] = useState({})
@@ -42,7 +41,7 @@ export function PasswordForm() {
                 newPassword: form.newPassword
             })
             setForm(EMPTY_FORM)
-            setMessage({ tone: "success", text: "Пароль изменён." })
+            setMessage({ tone: "success", text: "Пароль изменён" })
         } catch (error) {
             const { message, fieldErrors } = parseApiError(error)
             setErrors(fieldErrors)
