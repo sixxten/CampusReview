@@ -1,5 +1,6 @@
 import { REVIEW_CRITERIA } from "@/shared/consts"
 import { formatRating } from "@/shared/utils"
+import { ReviewReply } from "@/widgets/ReviewReply"
 import { ReviewComplaint } from "./ReviewComplaint"
 import styles from "./CoursePage.module.css"
 
@@ -44,6 +45,8 @@ export function ReviewCard({ review }) {
                     <p>{review[block.key]}</p>
                 </div>
             ))}
+
+            <ReviewReply reply={review.reply} />
 
             <ReviewComplaint review={review} />
         </article>

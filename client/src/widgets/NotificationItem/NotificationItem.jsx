@@ -8,7 +8,8 @@ const ICONS = {
     flag: "M5 21V4M5 4h11l-2 4 2 4H5",
     star: "M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3l-5.5 2.9 1-6.2L3 9.6l6.2-.9z",
     user: "M16 21a6 6 0 0 0-12 0M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M16 11l2 2 4-4",
-    unlock: "M5 11h14v10H5zM8 11V7a4 4 0 0 1 7.5-2"
+    unlock: "M5 11h14v10H5zM8 11V7a4 4 0 0 1 7.5-2",
+    reply: "M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"
 }
 
 const TYPE_VIEW = {
@@ -18,7 +19,8 @@ const TYPE_VIEW = {
     complaint_resolved: { icon: "flag", tone: "primary" },
     course_new_review: { icon: "star", tone: "primary" },
     teacher_approved: { icon: "user", tone: "success" },
-    account_unblocked: { icon: "unlock", tone: "success" }
+    account_unblocked: { icon: "unlock", tone: "success" },
+    review_reply: { icon: "reply", tone: "primary" }
 }
 
 export function NotificationItem({ notification, onOpen, compact = false }) {

@@ -5,6 +5,7 @@ import { formatRating } from "@/shared/utils"
 import { Alert } from "@/ui/Alert"
 import { Badge } from "@/ui/Badge"
 import { Button } from "@/ui/Button"
+import { ReviewReply } from "@/widgets/ReviewReply"
 import styles from "./ProfilePage.module.css"
 
 const formatDate = (value) => new Date(value).toLocaleDateString("ru-RU")
@@ -50,6 +51,8 @@ export function MyReviewItem({ review, onDelete }) {
             </div>
 
             {preview && <p className={styles.preview}>{preview}</p>}
+
+            <ReviewReply reply={review.reply} />
 
             {review.status === REVIEW_STATUS.REJECTED && review.rejectionReason && (
                 <Alert tone="warning">Причина отклонения: {review.rejectionReason}</Alert>

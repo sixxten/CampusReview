@@ -145,3 +145,10 @@ export const notificationApi = {
     markRead: (id) => authHost.patch(`/notifications/${id}/read`).then((res) => res.data),
     markAllRead: () => authHost.patch("/notifications/read-all").then((res) => res.data)
 }
+
+export const teacherApi = {
+    getCourses: () => authHost.get("/teacher/courses").then((res) => res.data),
+    getReviews: (params) => authHost.get("/teacher/reviews", { params }).then((res) => res.data),
+    saveReply: (reviewId, text) => authHost.put(`/teacher/reviews/${reviewId}/reply`, { text }).then((res) => res.data),
+    removeReply: (reviewId) => authHost.delete(`/teacher/reviews/${reviewId}/reply`).then((res) => res.data)
+}

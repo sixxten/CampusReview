@@ -13,11 +13,15 @@ import { PasswordForm } from "./PasswordForm"
 import { MyReviewsTab } from "./MyReviewsTab"
 import { FavoritesTab } from "./FavoritesTab"
 import { NotificationsTab } from "./NotificationsTab"
+import { TeacherCoursesTab } from "./TeacherCoursesTab"
+import { TeacherReviewsTab } from "./TeacherReviewsTab"
 import styles from "./ProfilePage.module.css"
 
 const TABS = [
     { id: "reviews", label: "Мои отзывы", roles: [ROLES.STUDENT] },
     { id: "favorites", label: "Избранное", roles: [ROLES.STUDENT] },
+    { id: "courses", label: "Мои курсы", roles: [ROLES.TEACHER] },
+    { id: "answers", label: "Отзывы о курсах", roles: [ROLES.TEACHER] },
     { id: "notifications", label: "Уведомления" },
     { id: "settings", label: "Настройки" }
 ]
@@ -48,6 +52,13 @@ export const ProfilePage = observer(() => {
     const requestedTab = searchParams.get("tab")
     const tab = tabs.some((item) => item.id === requestedTab) ? requestedTab : tabs[0].id
     const unread = notificationStore.unreadCount
+
+    const showTeacherReviews = ({ course = "", replied = "" }) => {
+        const params = { tab: "answers" }
+        if (course) params.course = String(course)
+        if (replied) params.replied = replied
+        setSearchParams(params)
+    }
 
     return (
         <div className={`container ${styles.page}`}>
@@ -102,6 +113,15 @@ export const ProfilePage = observer(() => {
             <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
                 {tab === "reviews" && <MyReviewsTab />}
                 {tab === "favorites" && <FavoritesTab />}
+                {tab === "courses" && <TeacherCoursesTab onShowReviews={showTeacherReviews} />}
+                {tab === "answers" && (
+                    <TeacherReviewsTab
+                        courseId={searchParams.get("course") || ""}
+                        replied={searchParams.get("replied") || ""}
+                        canReply={user.status === USER_STATUS.ACTIVE}
+                        onFiltersChange={showTeacherReviews}
+                    />
+                )}
                 {tab === "notifications" && <NotificationsTab />}
                 {tab === "settings" && (
                     <div className={styles.forms}>

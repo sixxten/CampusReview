@@ -122,3 +122,20 @@ export const COMPLAINT_STATUS_TONE = {
     accepted: "danger",
     rejected: "neutral"
 }
+
+export const COURSE_STATUS_LABELS = {
+    draft: "Черновик",
+    pending: "На модерации",
+    published: "Опубликован",
+    rejected: "Отклонён"
+}
+
+export const COURSE_STATUS_TONE = {
+    draft: "neutral",
+    pending: "warning",
+    published: "success",
+    rejected: "danger"
+}
+
+export const REPLY_MIN = 10
+export const REPLY_MAX = 1000

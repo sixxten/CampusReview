@@ -267,3 +267,94 @@
 .loadMore {
     align-self: center;
 }
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.stat dt {
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.stat dd {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+}
+
+.statAccent {
+    border-color: var(--color-warning-soft);
+    background: var(--color-warning-soft);
+}
+
+.statAccent dd {
+    color: var(--color-warning);
+}
+
+.courseSelect {
+    min-width: 240px;
+}
+
+.scoreList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+}
+
+.scoreList strong {
+    color: var(--color-text);
+}
+
+.reviewBlock h4 {
+    margin: 0 0 2px;
+    font-size: 14px;
+}
+
+.reviewBlock p {
+    margin: 0;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.replyForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.errorText {
+    margin: 0;
+    color: var(--color-danger);
+    font-size: 14px;
+}
+
+@media (max-width: 640px) {
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .courseSelect {
+        min-width: 0;
+        width: 100%;
+    }
+}
