@@ -98,3 +98,25 @@ export const REVIEW_SORT_OPTIONS = [
 ]
 
 export const REVIEW_MIN_TEXT = 20
+
+export const COMPLAINT_REASONS = [
+    { value: "offensive", label: "Оскорбления" },
+    { value: "irrelevant", label: "Не о курсе" },
+    { value: "false_info", label: "Недостоверно" },
+    { value: "spam", label: "Реклама или спам" },
+    { value: "other", label: "Другое" }
+]
+
+export const COMPLAINT_REASON_LABELS = Object.fromEntries(COMPLAINT_REASONS.map((item) => [item.value, item.label]))
+
+export const COMPLAINT_STATUS_LABELS = {
+    new: "Новая",
+    accepted: "Принята",
+    rejected: "Отклонена"
+}
+
+export const COMPLAINT_STATUS_TONE = {
+    new: "warning",
+    accepted: "danger",
+    rejected: "neutral"
+}

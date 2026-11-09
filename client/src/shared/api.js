@@ -92,6 +92,10 @@ export const adminApi = {
 
     moderateReview: (id, decision) => authHost.patch(`/admin/reviews/${id}`, decision).then((res) => res.data),
 
+    getComplaints: (params) => authHost.get("/admin/complaints", { params }).then((res) => res.data),
+
+    resolveComplaint: (id, status) => authHost.patch(`/admin/complaints/${id}`, { status }).then((res) => res.data),
+
     getUsers: (params) => authHost.get("/admin/users", { params }).then((res) => res.data),
 
     updateUserStatus: (id, status) =>
@@ -129,4 +133,8 @@ export const favoriteApi = {
     add: (courseId) => authHost.post(`/favorites/${courseId}`).then((res) => res.data),
 
     remove: (courseId) => authHost.delete(`/favorites/${courseId}`).then((res) => res.data)
+}
+
+export const complaintApi = {
+    create: (payload) => authHost.post("/complaints", payload).then((res) => res.data)
 }

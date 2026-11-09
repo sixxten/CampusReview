@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react"
 import { adminApi } from "@/shared/api"
+import { ComplaintsTab } from "./ComplaintsTab"
 import { ReviewsTab } from "./ReviewsTab"
 import { UsersTab } from "./UsersTab"
 import styles from "./AdminPage.module.css"
 
 const TABS = [
     { id: "reviews", label: "Отзывы", counter: "pendingReviews" },
+    { id: "complaints", label: "Жалобы", counter: "pendingComplaints" },
     { id: "users", label: "Пользователи", counter: "pendingTeachers" }
 ]
 
 export function AdminPage() {
     const [tab, setTab] = useState("reviews")
-    const [stats, setStats] = useState({ pendingReviews: 0, pendingTeachers: 0 })
+    const [stats, setStats] = useState({ pendingReviews: 0, pendingComplaints: 0, pendingTeachers: 0 })
     const [statsKey, setStatsKey] = useState(0)
 
     useEffect(() => {
@@ -57,7 +59,9 @@ export function AdminPage() {
             </div>
 
             <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
-                {tab === "reviews" ? <ReviewsTab onChanged={refreshStats} /> : <UsersTab onChanged={refreshStats} />}
+                {tab === "reviews" && <ReviewsTab onChanged={refreshStats} />}
+                {tab === "complaints" && <ComplaintsTab onChanged={refreshStats} />}
+                {tab === "users" && <UsersTab onChanged={refreshStats} />}
             </div>
         </div>
     )

@@ -351,3 +351,34 @@
         flex-basis: 100%;
     }
 }
+
+.complaintFilters {
+    max-width: 420px;
+}
+
+.complaintReason {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+}
+
+.complaintComment {
+    padding-left: var(--space-3);
+    border-left: 3px solid var(--color-warning);
+    font-style: italic;
+    overflow-wrap: anywhere;
+}
+
+.quotedReview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+}
+
+@media (max-width: 640px) {
+    .complaintFilters {
+        max-width: none;
+    }
+}

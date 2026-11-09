@@ -1,5 +1,6 @@
 import { REVIEW_CRITERIA } from "@/shared/consts"
 import { formatRating } from "@/shared/utils"
+import { ReviewComplaint } from "./ReviewComplaint"
 import styles from "./CoursePage.module.css"
 
 const formatDate = (value) => new Date(value).toLocaleDateString("ru-RU")
@@ -43,6 +44,8 @@ export function ReviewCard({ review }) {
                     <p>{review[block.key]}</p>
                 </div>
             ))}
+
+            <ReviewComplaint review={review} />
         </article>
     )
 }
