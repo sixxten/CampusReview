@@ -96,11 +96,20 @@ class NotificationService {
         })
     }
 
+    reviewReplied(review, course) {
+        return this.notify(review.userId, {
+            type: "review_reply",
+            title: `Преподаватель ответил на ваш отзыв о курсе «${course.title}»`,
+            message: "Ответ виден под вашим отзывом на странице курса.",
+            link: courseLink(course.id)
+        })
+    }
+
     teacherApproved(userId) {
         return this.notify(userId, {
             type: "teacher_approved",
             title: "Ваш аккаунт преподавателя подтверждён",
-            message: "Теперь вам доступны все возможности преподавателя на платформе.",
+            message: "Теперь вы можете отвечать на отзывы о своих курсах.",
             link: "/profile"
         })
     }

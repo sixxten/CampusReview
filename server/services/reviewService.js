@@ -1,5 +1,5 @@
 const { Op, fn, col } = require("sequelize")
-const { Review, Course, Semester, User, SCORE_FIELDS } = require("../models")
+const { Review, Course, Semester, User, ReviewReply, SCORE_FIELDS } = require("../models")
 const ApiError = require("../exceptions/ApiError")
 const notificationService = require("./notificationService")
 
@@ -8,6 +8,13 @@ const EDITABLE_STATUSES = ["draft", "pending", "rejected"]
 const MIN_TEXT_LENGTH = 20
 
 const round1 = (value) => Math.round(value * 10) / 10
+
+const replyInclude = {
+    model: ReviewReply,
+    as: "reply",
+    attributes: ["id", "text", "createdAt", "updatedAt"],
+    include: [{ model: User, as: "teacher", attributes: ["id", "firstName", "lastName"] }]
+}
 
 function calcRating({ usefulness, atmosphere, practicalValue }) {
     if ([usefulness, atmosphere, practicalValue].some((value) => value == null)) return null
@@ -47,6 +54,8 @@ function toPublicReview(review) {
         advice: data.advice,
         semester: data.semester,
         author: data.isAnonymous ? null : data.author,
+        course: data.course,
+        reply: data.reply || null,
         createdAt: data.createdAt
     }
 }
@@ -114,6 +123,7 @@ class ReviewService {
             status: submit ? "pending" : "draft",
             rejectionReason: null
         })
+        await ReviewReply.destroy({ where: { reviewId: review.id } })
         return review
     }
 
@@ -137,7 +147,8 @@ class ReviewService {
             where,
             include: [
                 { model: Course, attributes: ["id", "title"] },
-                { model: Semester, attributes: ["id", "name"] }
+                { model: Semester, attributes: ["id", "name"] },
+                replyInclude
             ],
             order: [["updatedAt", "DESC"]]
         })
@@ -170,7 +181,8 @@ class ReviewService {
             where,
             include: [
                 { model: User, as: "author", attributes: ["id", "firstName", "lastName"] },
-                { model: Semester, attributes: ["id", "name"] }
+                { model: Semester, attributes: ["id", "name"] },
+                replyInclude
             ],
             order,
             limit,
@@ -293,3 +305,5 @@ class ReviewService {
 }
 
 module.exports = new ReviewService()
+module.exports.toPublicReview = toPublicReview
+module.exports.replyInclude = replyInclude

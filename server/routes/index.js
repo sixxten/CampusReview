@@ -6,6 +6,7 @@ const reviewRouter = require("./reviewRouter")
 const favoriteRouter = require("./favoriteRouter")
 const complaintRouter = require("./complaintRouter")
 const notificationRouter = require("./notificationRouter")
+const teacherRouter = require("./teacherRouter")
 
 const router = new Router()
 
@@ -16,5 +17,6 @@ router.use("/reviews", reviewRouter)
 router.use("/favorites", favoriteRouter)
 router.use("/complaints", complaintRouter)
 router.use("/notifications", notificationRouter)
+router.use("/teacher", teacherRouter)
 
 module.exports = router

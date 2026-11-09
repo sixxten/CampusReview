@@ -7,6 +7,7 @@ const { Review, REVIEW_STATUSES, SCORE_FIELDS } = require("./Review")
 const { Favorite } = require("./Favorite")
 const { Complaint, COMPLAINT_REASONS, COMPLAINT_STATUSES } = require("./Complaint")
 const { Notification, NOTIFICATION_TYPES } = require("./Notification")
+const { ReviewReply } = require("./ReviewReply")
 
 User.hasMany(Token, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
 Token.belongsTo(User, { foreignKey: "userId" })
@@ -47,6 +48,12 @@ User.hasMany(Complaint, { as: "complaints", foreignKey: { name: "userId", allowN
 
 Complaint.belongsTo(User, { as: "moderator", foreignKey: { name: "moderatorId", allowNull: true }, onDelete: "SET NULL" })
 
+Review.hasOne(ReviewReply, { as: "reply", foreignKey: { name: "reviewId", allowNull: false }, onDelete: "CASCADE" })
+ReviewReply.belongsTo(Review, { foreignKey: { name: "reviewId", allowNull: false }, onDelete: "CASCADE" })
+
+ReviewReply.belongsTo(User, { as: "teacher", foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+User.hasMany(ReviewReply, { as: "replies", foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
+
 Notification.belongsTo(User, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
 User.hasMany(Notification, { foreignKey: { name: "userId", allowNull: false }, onDelete: "CASCADE" })
 
@@ -60,6 +67,7 @@ module.exports = {
     Favorite,
     Complaint,
     Notification,
+    ReviewReply,
     ROLES,
     STATUSES,
     SEASONS,

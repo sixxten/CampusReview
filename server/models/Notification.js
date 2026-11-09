@@ -8,7 +8,8 @@ const NOTIFICATION_TYPES = [
     "complaint_resolved",
     "teacher_approved",
     "account_unblocked",
-    "course_new_review"
+    "course_new_review",
+    "review_reply"
 ]
 
 const Notification = sequelize.define("notification", {

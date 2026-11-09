@@ -1,10 +1,10 @@
 const bcrypt = require("bcryptjs")
 const sequelize = require("../db")
-const { User, Faculty, Semester, Course, Review, Favorite, Complaint, Notification } = require("../models")
+const { User, Faculty, Semester, Course, Review, Favorite, Complaint, Notification, ReviewReply } = require("../models")
 const reviewService = require("../services/reviewService")
 const notificationService = require("../services/notificationService")
 const data = require("./seedData")
-const { reviews, complaints } = require("./seedReviews")
+const { reviews, complaints, replies } = require("./seedReviews")
 
 async function seed() {
     await sequelize.authenticate()
@@ -92,6 +92,15 @@ async function seed() {
         })
     }
 
+    for (const { reviewAuthor, course, text } of replies) {
+        const review = await Review.findOne({ where: { userId: users[reviewAuthor].id, courseId: courses[course].id } })
+        if (!review) continue
+        await ReviewReply.findOrCreate({
+            where: { reviewId: review.id },
+            defaults: { text, userId: courses[course].teacherId }
+        })
+    }
+
     for (const course of Object.values(courses)) {
         await reviewService.recalcCourseRating(course.id)
     }
@@ -108,6 +117,7 @@ async function seed() {
     console.log(`  отзывов: ${await Review.count()} (опубликовано: ${await Review.count({ where: { status: "published" } })})`)
     console.log(`  в избранном: ${await Favorite.count()}`)
     console.log(`  жалоб: ${await Complaint.count()} (новых: ${await Complaint.count({ where: { status: "new" } })})`)
+    console.log(`  ответов преподавателей: ${await ReviewReply.count()}`)
     console.log(`  уведомлений: ${await Notification.count()} (непрочитанных: ${await Notification.count({ where: { isRead: false } })})`)
     console.log(`Пароль демо-пользователей: ${data.DEMO_PASSWORD}`)
 }
@@ -139,6 +149,13 @@ async function seedNotifications() {
     })
     for (const complaint of resolved) {
         await notificationService.complaintResolved(complaint, complaint.review.course, complaint.status === "accepted")
+    }
+
+    const answered = await ReviewReply.findAll({
+        include: [{ model: Review, include: [{ model: Course, attributes: ["id", "title"] }] }]
+    })
+    for (const reply of answered) {
+        await notificationService.reviewReplied(reply.review, reply.review.course)
     }
 }
 
